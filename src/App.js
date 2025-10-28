@@ -1,4 +1,5 @@
 import VerticalNavBar from './components/VerticalNav/VerticalNavBar';
+import MainContent from './components/MainContent';
 import { NavProvider } from './context/NavContext';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         padding: 0
       }}>
         <VerticalNavBar />
+        <MainContent />
       </div>
     </NavProvider>
   );
