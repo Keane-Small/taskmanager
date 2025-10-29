@@ -38,7 +38,7 @@ const IconWrapper = styled(motion.div)`
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: ${props => props.isActive ? '#FFFFFF' : '#000000'};
+  color: ${props => props.$isActive ? '#FFFFFF' : '#000000'};
   transition: color 0.3s ease-in-out;
 `;
 
@@ -80,8 +80,7 @@ const NavItem = ({ icon: Icon, notificationCount, isActive, onClick, ariaLabel }
           />
         )}
       </AnimatePresence>
-      
-      <IconWrapper isActive={isActive}>
+      <IconWrapper $isActive={isActive}>
         <Icon />
         {notificationCount > 0 && (
           <NotificationBadge

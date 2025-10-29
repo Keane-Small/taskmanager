@@ -24,7 +24,7 @@ const StatusBadge = styled.div`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: ${props => props.isOnline ? '#00FF00' : '#FF0000'};
+  background-color: ${props => props.$isOnline ? '#00FF00' : '#FF0000'};
   border: 2px solid #FFFDD0;
 `;
 
@@ -39,7 +39,7 @@ const UserAvatar = ({ src, isOnline = true, onClick }) => {
       aria-label="User profile"
     >
       <AvatarImage src={src} alt="User avatar" />
-      <StatusBadge isOnline={isOnline} />
+      <StatusBadge $isOnline={isOnline} />
     </AvatarContainer>
   );
 };
