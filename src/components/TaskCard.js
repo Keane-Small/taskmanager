@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { FiArrowRight, FiCheck } from 'react-icons/fi';
+import { FiArrowRight, FiCheck, FiEdit2 } from 'react-icons/fi';
 
 const Card = styled.div`
   background-color: #FFFFFF;
@@ -31,6 +31,31 @@ const TaskTitle = styled.h4`
   font-size: 14px;
   font-weight: 600;
   color: #000000;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const TitleText = styled.span`
+  flex: 1;
+`;
+
+const EditButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: all 0.2s;
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000;
+  }
 `;
 
 const TaskDescription = styled.p`
@@ -95,7 +120,7 @@ const AssignedLabel = styled.span`
   color: #999;
 `;
 
-const TaskCard = ({ task, isDragging, onMoveTask }) => {
+const TaskCard = ({ task, isDragging, onMoveTask, showCompleteState, onEditTask }) => {
   const {
     attributes,
     listeners,
@@ -116,20 +141,26 @@ const TaskCard = ({ task, isDragging, onMoveTask }) => {
     }
   };
 
-  const getNextStatus = () => {
-    if (task.status === 'todo') return 'in-progress';
-    if (task.status === 'in-progress') return 'completed';
-    return null;
+  const handleEditClick = (e) => {
+    e.stopPropagation();
+    if (onEditTask) {
+      onEditTask(task);
+    }
   };
 
   const getButtonText = () => {
-    if (task.status === 'todo') return 'Start';
-    if (task.status === 'in-progress') return 'Complete';
-    return null;
+    if (task.status === 'completed') return null;
+    
+    // Show "Complete" temporarily after moving to in-progress, or permanently in completed
+    if (showCompleteState && task.status === 'in-progress') {
+      return 'Complete';
+    }
+    
+    return 'Next';
   };
 
-  const nextStatus = getNextStatus();
   const buttonText = getButtonText();
+  const showButton = task.status !== 'completed';
 
   return (
     <Card
@@ -139,20 +170,28 @@ const TaskCard = ({ task, isDragging, onMoveTask }) => {
       {...listeners}
       isDragging={isDragging}
     >
-      <TaskTitle>{task.title}</TaskTitle>
+      <TaskTitle>
+        <TitleText>{task.title}</TitleText>
+        <EditButton 
+          onClick={handleEditClick}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <FiEdit2 size={14} />
+        </EditButton>
+      </TaskTitle>
       <TaskDescription>{task.description}</TaskDescription>
       <TaskFooter>
         <AssignedTo>
           <AssignedLabel>Assigned to:</AssignedLabel>
           <Avatar>{task.assignedTo}</Avatar>
         </AssignedTo>
-        {nextStatus && (
+        {showButton && (
           <ActionButton 
             onClick={handleMoveClick}
-            completed={task.status === 'in-progress'}
+            completed={showCompleteState && task.status === 'in-progress'}
             onPointerDown={(e) => e.stopPropagation()}
           >
-            {task.status === 'in-progress' ? <FiCheck size={12} /> : <FiArrowRight size={12} />}
+            {showCompleteState && task.status === 'in-progress' ? <FiCheck size={12} /> : <FiArrowRight size={12} />}
             {buttonText}
           </ActionButton>
         )}

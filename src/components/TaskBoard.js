@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FiX, FiArrowLeft } from 'react-icons/fi';
+import { FiX, FiArrowLeft, FiPlus } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import TaskCard from './TaskCard';
+import TaskModal from './TaskModal';
 import { getTasksForProject } from '../data/tasksDatabase';
 
 const BoardContainer = styled.div`
@@ -35,6 +36,26 @@ const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+`;
+
+const AddTaskButton = styled.button`
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #333333;
+    transform: translateY(-2px);
+  }
 `;
 
 const BackButton = styled.button`
@@ -73,23 +94,22 @@ const MetaItem = styled.span`
 
 const BoardContent = styled.div`
   flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
+  display: flex;
 `;
 
 const ColumnsContainer = styled.div`
   display: flex;
   gap: 20px;
   height: 100%;
-  min-width: min-content;
+  width: 100%;
 `;
 
 const Column = styled.div`
   background-color: #F9F9F9;
   border-radius: 12px;
   padding: 16px;
-  min-width: 320px;
-  max-width: 320px;
+  flex: 1;
   display: flex;
   flex-direction: column;
 `;
@@ -166,6 +186,9 @@ const TaskBoard = ({ project, onClose }) => {
   const initialTasks = getTasksForProject(project.id);
   const [tasks, setTasks] = useState(initialTasks);
   const [activeTask, setActiveTask] = useState(null);
+  const [completingTaskId, setCompletingTaskId] = useState(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -235,6 +258,13 @@ const TaskBoard = ({ project, onClose }) => {
     let newStatus;
     if (task.status === 'todo') {
       newStatus = 'in-progress';
+      
+      // Show "Complete" state for 4-5 seconds when moving to in-progress
+      setCompletingTaskId(task.id);
+      setTimeout(() => {
+        setCompletingTaskId(null);
+      }, 4500); // 4.5 seconds
+      
     } else if (task.status === 'in-progress') {
       newStatus = 'completed';
     } else {
@@ -249,6 +279,46 @@ const TaskBoard = ({ project, onClose }) => {
         return t;
       });
     });
+  };
+
+  const handleAddTask = () => {
+    setSelectedTask(null);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleEditTask = (task) => {
+    setSelectedTask(task);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleSubmitTask = (taskData) => {
+    if (selectedTask) {
+      // Edit existing task
+      setTasks(prevTasks => {
+        return prevTasks.map(t => {
+          if (t.id === selectedTask.id) {
+            return { ...t, ...taskData };
+          }
+          return t;
+        });
+      });
+    } else {
+      // Add new task
+      const newTask = {
+        id: `task_${Date.now()}`,
+        ...taskData,
+        status: taskData.status || 'todo'
+      };
+      setTasks(prevTasks => [...prevTasks, newTask]);
+    }
+    setIsTaskModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleDeleteTask = (taskId) => {
+    setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+    setIsTaskModalOpen(false);
+    setSelectedTask(null);
   };
 
   return (
@@ -274,6 +344,10 @@ const TaskBoard = ({ project, onClose }) => {
               </ProjectMeta>
             </div>
           </HeaderLeft>
+          <AddTaskButton onClick={handleAddTask}>
+            <FiPlus size={18} />
+            Add Task
+          </AddTaskButton>
         </BoardHeader>
 
         <BoardContent>
@@ -288,7 +362,13 @@ const TaskBoard = ({ project, onClose }) => {
                   <SortableContext items={todoTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {todoTasks.length > 0 ? (
                       todoTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onMoveTask={handleMoveTask} />
+                        <TaskCard 
+                          key={task.id} 
+                          task={task} 
+                          onMoveTask={handleMoveTask}
+                          onEditTask={handleEditTask}
+                          showCompleteState={completingTaskId === task.id}
+                        />
                       ))
                     ) : (
                       <EmptyState>Drop tasks here</EmptyState>
@@ -308,7 +388,13 @@ const TaskBoard = ({ project, onClose }) => {
                   <SortableContext items={inProgressTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {inProgressTasks.length > 0 ? (
                       inProgressTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onMoveTask={handleMoveTask} />
+                        <TaskCard 
+                          key={task.id} 
+                          task={task} 
+                          onMoveTask={handleMoveTask}
+                          onEditTask={handleEditTask}
+                          showCompleteState={completingTaskId === task.id}
+                        />
                       ))
                     ) : (
                       <EmptyState>Drop tasks here</EmptyState>
@@ -328,7 +414,13 @@ const TaskBoard = ({ project, onClose }) => {
                   <SortableContext items={completedTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {completedTasks.length > 0 ? (
                       completedTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onMoveTask={handleMoveTask} />
+                        <TaskCard 
+                          key={task.id} 
+                          task={task} 
+                          onMoveTask={handleMoveTask}
+                          onEditTask={handleEditTask}
+                          showCompleteState={false}
+                        />
                       ))
                     ) : (
                       <EmptyState>Drop tasks here</EmptyState>
@@ -339,6 +431,18 @@ const TaskBoard = ({ project, onClose }) => {
             </Column>
           </ColumnsContainer>
         </BoardContent>
+
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={() => {
+            setIsTaskModalOpen(false);
+            setSelectedTask(null);
+          }}
+          onSubmit={handleSubmitTask}
+          onDelete={handleDeleteTask}
+          task={selectedTask}
+          projectId={project.id}
+        />
       </BoardContainer>
 
       <DragOverlay>
