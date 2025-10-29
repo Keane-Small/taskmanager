@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ModalOverlay = styled(motion.div)`
@@ -117,6 +117,77 @@ const Select = styled.select`
   }
 `;
 
+const AssigneeContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  min-height: 44px;
+  background-color: #FFFFFF;
+  align-items: center;
+`;
+
+const AssigneeTag = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #000000;
+  color: #FFFFFF;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+`;
+
+const RemoveTagButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+  transition: opacity 0.2s;
+  
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const AssigneeInput = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 4px;
+  font-size: 14px;
+  min-width: 60px;
+`;
+
+const AddAssigneeButton = styled.button`
+  background-color: #F0F0F0;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: #E0E0E0;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
 const ButtonGroup = styled.div`
   display: flex;
   gap: 12px;
@@ -166,8 +237,29 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
     title: task?.title || '',
     description: task?.description || '',
     status: task?.status || 'todo',
-    assignedTo: task?.assignedTo || ''
+    assignedTo: task?.assignedTo || []
   });
+  
+  const [newAssignee, setNewAssignee] = useState('');
+
+  useEffect(() => {
+    if (task) {
+      setFormData({
+        title: task.title || '',
+        description: task.description || '',
+        status: task.status || 'todo',
+        assignedTo: Array.isArray(task.assignedTo) ? task.assignedTo : (task.assignedTo ? [task.assignedTo] : [])
+      });
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        status: 'todo',
+        assignedTo: []
+      });
+    }
+    setNewAssignee('');
+  }, [task, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -175,6 +267,31 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleAddAssignee = () => {
+    const initials = newAssignee.trim().toUpperCase();
+    if (initials && initials.length <= 3 && !formData.assignedTo.includes(initials)) {
+      setFormData(prev => ({
+        ...prev,
+        assignedTo: [...prev.assignedTo, initials]
+      }));
+      setNewAssignee('');
+    }
+  };
+
+  const handleRemoveAssignee = (assignee) => {
+    setFormData(prev => ({
+      ...prev,
+      assignedTo: prev.assignedTo.filter(a => a !== assignee)
+    }));
+  };
+
+  const handleAssigneeKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddAssignee();
+    }
   };
 
   const handleSubmit = (e) => {
@@ -192,17 +309,19 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
       title: '',
       description: '',
       status: 'todo',
-      assignedTo: ''
+      assignedTo: []
     });
+    setNewAssignee('');
   };
 
   const handleClose = () => {
     setFormData({
-      title: task?.title || '',
-      description: task?.description || '',
-      status: task?.status || 'todo',
-      assignedTo: task?.assignedTo || ''
+      title: '',
+      description: '',
+      status: 'todo',
+      assignedTo: []
     });
+    setNewAssignee('');
     onClose();
   };
 
@@ -273,14 +392,35 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
               
               <FormGroup>
                 <FormLabel>Assigned To (Initials)</FormLabel>
-                <Input
-                  type="text"
-                  name="assignedTo"
-                  value={formData.assignedTo}
-                  onChange={handleInputChange}
-                  placeholder="e.g., JD"
-                  maxLength="3"
-                />
+                <AssigneeContainer>
+                  {formData.assignedTo.map((assignee, index) => (
+                    <AssigneeTag key={index}>
+                      {assignee}
+                      <RemoveTagButton
+                        type="button"
+                        onClick={() => handleRemoveAssignee(assignee)}
+                      >
+                        <FiX size={14} />
+                      </RemoveTagButton>
+                    </AssigneeTag>
+                  ))}
+                  <AssigneeInput
+                    type="text"
+                    value={newAssignee}
+                    onChange={(e) => setNewAssignee(e.target.value.toUpperCase())}
+                    onKeyPress={handleAssigneeKeyPress}
+                    placeholder={formData.assignedTo.length === 0 ? "Enter initials (e.g., JD)" : ""}
+                    maxLength="3"
+                  />
+                  <AddAssigneeButton
+                    type="button"
+                    onClick={handleAddAssignee}
+                    disabled={!newAssignee.trim()}
+                  >
+                    <FiPlus size={14} />
+                    Add
+                  </AddAssigneeButton>
+                </AssigneeContainer>
               </FormGroup>
               
               <ButtonGroup>

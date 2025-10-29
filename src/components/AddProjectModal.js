@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ModalOverlay = styled(motion.div)`
@@ -99,6 +99,77 @@ const Select = styled.select`
   }
 `;
 
+const CollaboratorContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  min-height: 44px;
+  background-color: #FFFFFF;
+  align-items: center;
+`;
+
+const CollaboratorTag = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #000000;
+  color: #FFFFFF;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+`;
+
+const RemoveTagButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+  transition: opacity 0.2s;
+  
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const CollaboratorInput = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 4px;
+  font-size: 14px;
+  min-width: 60px;
+`;
+
+const AddCollaboratorButton = styled.button`
+  background-color: #F0F0F0;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: #E0E0E0;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
 const ButtonGroup = styled.div`
   display: flex;
   gap: 12px;
@@ -141,8 +212,10 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     name: '',
     status: 'Planning',
     dueDate: '',
-    collaborators: ''
+    collaborators: []
   });
+  
+  const [newCollaborator, setNewCollaborator] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -150,6 +223,31 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleAddCollaborator = () => {
+    const initials = newCollaborator.trim().toUpperCase();
+    if (initials && initials.length <= 3 && !formData.collaborators.includes(initials)) {
+      setFormData(prev => ({
+        ...prev,
+        collaborators: [...prev.collaborators, initials]
+      }));
+      setNewCollaborator('');
+    }
+  };
+
+  const handleRemoveCollaborator = (collaborator) => {
+    setFormData(prev => ({
+      ...prev,
+      collaborators: prev.collaborators.filter(c => c !== collaborator)
+    }));
+  };
+
+  const handleCollaboratorKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCollaborator();
+    }
   };
 
   const handleSubmit = (e) => {
@@ -160,15 +258,11 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       return;
     }
 
-    const collaborators = formData.collaborators
-      ? formData.collaborators.split(',').map(c => c.trim())
-      : ['TBD'];
-
     const projectData = {
       name: formData.name,
       status: formData.status,
       dueDate: formData.dueDate || 'TBD',
-      collaborators: collaborators
+      collaborators: formData.collaborators.length > 0 ? formData.collaborators : ['TBD']
     };
 
     onSubmit(projectData);
@@ -178,8 +272,9 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       name: '',
       status: 'Planning',
       dueDate: '',
-      collaborators: ''
+      collaborators: []
     });
+    setNewCollaborator('');
   };
 
   const handleClose = () => {
@@ -187,8 +282,9 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       name: '',
       status: 'Planning',
       dueDate: '',
-      collaborators: ''
+      collaborators: []
     });
+    setNewCollaborator('');
     onClose();
   };
 
@@ -252,14 +348,36 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               </FormGroup>
               
               <FormGroup>
-                <FormLabel>Collaborators</FormLabel>
-                <Input
-                  type="text"
-                  name="collaborators"
-                  value={formData.collaborators}
-                  onChange={handleInputChange}
-                  placeholder="Enter initials separated by commas (e.g., AB, CD, EF)"
-                />
+                <FormLabel>Collaborators (Initials)</FormLabel>
+                <CollaboratorContainer>
+                  {formData.collaborators.map((collaborator, index) => (
+                    <CollaboratorTag key={index}>
+                      {collaborator}
+                      <RemoveTagButton
+                        type="button"
+                        onClick={() => handleRemoveCollaborator(collaborator)}
+                      >
+                        <FiX size={14} />
+                      </RemoveTagButton>
+                    </CollaboratorTag>
+                  ))}
+                  <CollaboratorInput
+                    type="text"
+                    value={newCollaborator}
+                    onChange={(e) => setNewCollaborator(e.target.value.toUpperCase())}
+                    onKeyPress={handleCollaboratorKeyPress}
+                    placeholder={formData.collaborators.length === 0 ? "Enter initials (e.g., AB)" : ""}
+                    maxLength="3"
+                  />
+                  <AddCollaboratorButton
+                    type="button"
+                    onClick={handleAddCollaborator}
+                    disabled={!newCollaborator.trim()}
+                  >
+                    <FiPlus size={14} />
+                    Add
+                  </AddCollaboratorButton>
+                </CollaboratorContainer>
               </FormGroup>
               
               <ButtonGroup>

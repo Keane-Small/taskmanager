@@ -76,6 +76,7 @@ const AssignedTo = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 `;
 
 const ActionButton = styled.button`
@@ -183,7 +184,13 @@ const TaskCard = ({ task, isDragging, onMoveTask, showCompleteState, onEditTask 
       <TaskFooter>
         <AssignedTo>
           <AssignedLabel>Assigned to:</AssignedLabel>
-          <Avatar>{task.assignedTo}</Avatar>
+          {Array.isArray(task.assignedTo) ? (
+            task.assignedTo.map((person, index) => (
+              <Avatar key={index}>{person}</Avatar>
+            ))
+          ) : (
+            <Avatar>{task.assignedTo}</Avatar>
+          )}
         </AssignedTo>
         {showButton && (
           <ActionButton 
