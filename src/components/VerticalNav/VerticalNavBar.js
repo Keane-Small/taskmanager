@@ -81,7 +81,7 @@ const VerticalNavBar = () => {
   };
 
   const handleAddClick = () => {
-    console.log('Add button clicked');
+    setActiveNavItemId('projects');
   };
 
   const handleAvatarClick = () => {

@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import VerticalNavBar from './components/VerticalNav/VerticalNavBar';
+import MainContent from './components/MainContent';
 import { NavProvider } from './context/NavContext';
 import Messaging from './pages/Messaging';
 
