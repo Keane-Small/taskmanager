@@ -231,6 +231,26 @@ const TaskBoard = ({ project, onClose }) => {
     setActiveTask(null);
   };
 
+  const handleMoveTask = (task) => {
+    let newStatus;
+    if (task.status === 'todo') {
+      newStatus = 'in-progress';
+    } else if (task.status === 'in-progress') {
+      newStatus = 'completed';
+    } else {
+      return; // Already completed
+    }
+
+    setTasks(prevTasks => {
+      return prevTasks.map(t => {
+        if (t.id === task.id) {
+          return { ...t, status: newStatus };
+        }
+        return t;
+      });
+    });
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -268,7 +288,7 @@ const TaskBoard = ({ project, onClose }) => {
                   <SortableContext items={todoTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {todoTasks.length > 0 ? (
                       todoTasks.map(task => (
-                        <TaskCard key={task.id} task={task} />
+                        <TaskCard key={task.id} task={task} onMoveTask={handleMoveTask} />
                       ))
                     ) : (
                       <EmptyState>Drop tasks here</EmptyState>
@@ -288,7 +308,7 @@ const TaskBoard = ({ project, onClose }) => {
                   <SortableContext items={inProgressTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {inProgressTasks.length > 0 ? (
                       inProgressTasks.map(task => (
-                        <TaskCard key={task.id} task={task} />
+                        <TaskCard key={task.id} task={task} onMoveTask={handleMoveTask} />
                       ))
                     ) : (
                       <EmptyState>Drop tasks here</EmptyState>
@@ -308,7 +328,7 @@ const TaskBoard = ({ project, onClose }) => {
                   <SortableContext items={completedTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
                     {completedTasks.length > 0 ? (
                       completedTasks.map(task => (
-                        <TaskCard key={task.id} task={task} />
+                        <TaskCard key={task.id} task={task} onMoveTask={handleMoveTask} />
                       ))
                     ) : (
                       <EmptyState>Drop tasks here</EmptyState>

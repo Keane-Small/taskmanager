@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { FiArrowRight, FiCheck } from 'react-icons/fi';
 
 const Card = styled.div`
   background-color: #FFFFFF;
@@ -43,12 +44,37 @@ const TaskFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 8px;
 `;
 
 const AssignedTo = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+`;
+
+const ActionButton = styled.button`
+  background-color: ${props => props.completed ? '#00C853' : '#000000'};
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+  
+  &:hover {
+    transform: scale(1.05);
+    background-color: ${props => props.completed ? '#00A844' : '#333333'};
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
 `;
 
 const Avatar = styled.div`
@@ -69,7 +95,7 @@ const AssignedLabel = styled.span`
   color: #999;
 `;
 
-const TaskCard = ({ task, isDragging }) => {
+const TaskCard = ({ task, isDragging, onMoveTask }) => {
   const {
     attributes,
     listeners,
@@ -83,6 +109,28 @@ const TaskCard = ({ task, isDragging }) => {
     transition,
   };
 
+  const handleMoveClick = (e) => {
+    e.stopPropagation();
+    if (onMoveTask) {
+      onMoveTask(task);
+    }
+  };
+
+  const getNextStatus = () => {
+    if (task.status === 'todo') return 'in-progress';
+    if (task.status === 'in-progress') return 'completed';
+    return null;
+  };
+
+  const getButtonText = () => {
+    if (task.status === 'todo') return 'Start';
+    if (task.status === 'in-progress') return 'Complete';
+    return null;
+  };
+
+  const nextStatus = getNextStatus();
+  const buttonText = getButtonText();
+
   return (
     <Card
       ref={setNodeRef}
@@ -94,10 +142,20 @@ const TaskCard = ({ task, isDragging }) => {
       <TaskTitle>{task.title}</TaskTitle>
       <TaskDescription>{task.description}</TaskDescription>
       <TaskFooter>
-        <AssignedLabel>Assigned to:</AssignedLabel>
         <AssignedTo>
+          <AssignedLabel>Assigned to:</AssignedLabel>
           <Avatar>{task.assignedTo}</Avatar>
         </AssignedTo>
+        {nextStatus && (
+          <ActionButton 
+            onClick={handleMoveClick}
+            completed={task.status === 'in-progress'}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            {task.status === 'in-progress' ? <FiCheck size={12} /> : <FiArrowRight size={12} />}
+            {buttonText}
+          </ActionButton>
+        )}
       </TaskFooter>
     </Card>
   );
