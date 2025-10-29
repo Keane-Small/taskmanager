@@ -5,7 +5,9 @@ import { FiHome, FiMessageSquare, FiBell, FiCalendar, FiSettings } from 'react-i
 import UserAvatar from './UserAvatar';
 import AddButton from './AddButton';
 import NavItem from './NavItem';
+
 import { useNav } from '../../context/NavContext';
+import { useNavigate } from 'react-router-dom';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
@@ -63,11 +65,19 @@ const navItems = [
   { id: 'calendar', icon: FiCalendar, label: 'Calendar', notificationCount: 0 },
 ];
 
+
 const VerticalNavBar = () => {
   const { activeNavItemId, setActiveNavItemId } = useNav();
+  const navigate = useNavigate();
 
   const handleNavClick = (itemId) => {
     setActiveNavItemId(itemId);
+    if (itemId === 'messages') {
+      navigate('/messaging');
+    } else if (itemId === 'home') {
+      navigate('/');
+    }
+    // Add more navigation as needed
   };
 
   const handleAddClick = () => {
@@ -80,6 +90,7 @@ const VerticalNavBar = () => {
 
   const handleSettingsClick = () => {
     setActiveNavItemId('settings');
+    // You can add navigation for settings if needed
   };
 
   return (
