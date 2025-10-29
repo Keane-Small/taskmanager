@@ -14,13 +14,14 @@ const BoardContainer = styled.div`
   top: 10px;
   right: 15px;
   bottom: 10px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 30px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const BoardHeader = styled.div`

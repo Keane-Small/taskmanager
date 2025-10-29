@@ -5,16 +5,18 @@ import { CSS } from '@dnd-kit/utilities';
 import { FiArrowRight, FiCheck, FiEdit2 } from 'react-icons/fi';
 
 const Card = styled.div`
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   cursor: grab;
-  transition: box-shadow 0.2s;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   
   &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
   
   &:active {
@@ -23,6 +25,7 @@ const Card = styled.div`
   
   ${props => props.isDragging && `
     opacity: 0.5;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   `}
 `;
 
