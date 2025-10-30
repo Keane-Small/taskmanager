@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { eventsAPI } from '../services/api';
 
 const ContentBox = styled.div`
   position: fixed;
@@ -168,6 +169,9 @@ const ParticipantAvatar = styled.div`
 
 const CalendarPage = () => {
   const [view, setView] = useState('week');
+  const [events, setEvents] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   const days = [
     { name: 'Wed', number: 17, isToday: false },
@@ -179,7 +183,7 @@ const CalendarPage = () => {
 
   const timeSlots = ['9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00'];
 
-  const events = {
+  const mockEvents = {
     17: [
       { time: '9:00', title: 'Team Standup', color: '#FFE5B4', participants: ['JD', 'SM', 'AL'] },
       { time: '2:00', title: 'Design Review', color: '#E6D5FF', participants: ['KS', 'RJ'] },
@@ -201,6 +205,54 @@ const CalendarPage = () => {
     ],
   };
 
+  // Fetch events from API
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Get date range for current week
+      const startDate = new Date(2023, 4, 17); // May 17, 2023
+      const endDate = new Date(2023, 4, 21);   // May 21, 2023
+      
+      const response = await eventsAPI.getByDateRange(
+        startDate.toISOString(),
+        endDate.toISOString()
+      );
+      
+      // Transform API response to match our event structure
+      const transformedEvents = {};
+      response.data.forEach(event => {
+        const date = new Date(event.date);
+        const day = date.getDate();
+        
+        if (!transformedEvents[day]) {
+          transformedEvents[day] = [];
+        }
+        
+        transformedEvents[day].push({
+          time: event.time,
+          title: event.title,
+          color: event.color || '#FFE5B4',
+          participants: event.participants || []
+        });
+      });
+      
+      setEvents(transformedEvents);
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      setError('Failed to load calendar events. Using demo data.');
+      // Fallback to mock data if API fails
+      setEvents(mockEvents);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ContentBox>
       <CalendarHeader>
@@ -212,7 +264,18 @@ const CalendarPage = () => {
         </ViewSelector>
       </CalendarHeader>
 
-      <CalendarGrid>
+      {error && (
+        <div style={{ padding: '12px', marginBottom: '20px', backgroundColor: '#FFF3CD', borderRadius: '8px', color: '#856404' }}>
+          {error}
+        </div>
+      )}
+
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '40px', fontSize: '16px', color: '#666' }}>
+          Loading calendar...
+        </div>
+      ) : (
+        <CalendarGrid>
         <WeekHeader>
           <TimeLabel>Time</TimeLabel>
           {days.map((day, index) => (
@@ -245,7 +308,8 @@ const CalendarPage = () => {
             </React.Fragment>
           ))}
         </CalendarBody>
-      </CalendarGrid>
+        </CalendarGrid>
+      )}
     </ContentBox>
   );
 };

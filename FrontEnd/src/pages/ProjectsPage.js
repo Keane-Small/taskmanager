@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FiArrowRight, FiPlus } from 'react-icons/fi';
 import AddProjectModal from '../components/AddProjectModal';
 import TaskBoard from '../components/TaskBoard';
+import { projectsAPI } from '../services/api';
 
 const ContentBox = styled.div`
   position: fixed;
@@ -281,9 +282,32 @@ const projects = [
 const projectColors = ['#FFE5E5', '#E5F3FF', '#E5FFE5', '#FFF5E5', '#F5E5FF', '#FFE5F5', '#E5FFFF', '#FFEBE5', '#E5F5E5'];
 
 const ProjectsPage = () => {
-  const [projectList, setProjectList] = useState(projects);
+  const [projectList, setProjectList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch projects from API
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await projectsAPI.getAll();
+      setProjectList(response.data);
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+      setError('Failed to load projects. Using demo data.');
+      // Fallback to mock data if API fails
+      setProjectList(projects);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddProject = () => {
     setIsModalOpen(true);
@@ -293,17 +317,34 @@ const ProjectsPage = () => {
     setIsModalOpen(false);
   };
 
-  const handleSubmitProject = (projectData) => {
-    const newProject = {
-      id: projectList.length + 1,
-      ...projectData,
-      color: projectColors[projectList.length % projectColors.length],
-      totalTasks: 0,
-      completedTasks: 0
-    };
+  const handleSubmitProject = async (projectData) => {
+    try {
+      const newProject = {
+        name: projectData.name,
+        status: projectData.status,
+        dueDate: projectData.dueDate,
+        collaborators: projectData.collaborators,
+        color: projectColors[projectList.length % projectColors.length],
+        totalTasks: 0,
+        completedTasks: 0
+      };
 
-    setProjectList([...projectList, newProject]);
-    handleCloseModal();
+      const response = await projectsAPI.create(newProject);
+      setProjectList([...projectList, response.data]);
+      handleCloseModal();
+    } catch (err) {
+      console.error('Error creating project:', err);
+      // Fallback to local state if API fails
+      const newProject = {
+        id: projectList.length + 1,
+        ...projectData,
+        color: projectColors[projectList.length % projectColors.length],
+        totalTasks: 0,
+        completedTasks: 0
+      };
+      setProjectList([...projectList, newProject]);
+      handleCloseModal();
+    }
   };
 
   const handleOpenProject = (project) => {
@@ -334,14 +375,26 @@ const ProjectsPage = () => {
         </AddProjectButton>
       </Header>
       
-      <AddProjectModal 
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmitProject}
-      />
+      {error && (
+        <div style={{ padding: '12px', marginBottom: '20px', backgroundColor: '#FFF3CD', borderRadius: '8px', color: '#856404' }}>
+          {error}
+        </div>
+      )}
 
-      <ProjectsGrid>
-        {projectList.map(project => {
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '40px', fontSize: '16px', color: '#666' }}>
+          Loading projects...
+        </div>
+      ) : (
+        <>
+          <AddProjectModal 
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onSubmit={handleSubmitProject}
+          />
+
+          <ProjectsGrid>
+            {projectList.map(project => {
           const percentage = calculatePercentage(project.completedTasks, project.totalTasks);
           
           return (
@@ -374,7 +427,9 @@ const ProjectsPage = () => {
             </ProjectCard>
           );
         })}
-      </ProjectsGrid>
+          </ProjectsGrid>
+        </>
+      )}
     </ContentBox>
   );
 };

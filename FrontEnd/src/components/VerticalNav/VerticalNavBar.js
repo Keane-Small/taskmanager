@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiMessageCircle, FiBell, FiCalendar, FiSettings, FiFolder } from 'react-icons/fi';
+import { FiMessageCircle, FiBell, FiCalendar, FiSettings, FiFolder, FiUser } from 'react-icons/fi';
 import { MdDashboard } from 'react-icons/md';
 import UserAvatar from './UserAvatar';
 import NavItem from './NavItem';
@@ -87,7 +87,6 @@ const VerticalNavBar = () => {
 
   const handleSettingsClick = () => {
     setActiveNavItemId('settings');
-    navigate('/settings');
   };
 
   return (
