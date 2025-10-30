@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { FiMessageCircle, FiBell, FiCalendar, FiSettings, FiFolder } from 'react-icons/fi';
 import { MdDashboard } from 'react-icons/md';
 import UserAvatar from './UserAvatar';
-import AddButton from './AddButton';
 import NavItem from './NavItem';
 
 import { useNav } from '../../context/NavContext';
@@ -68,8 +67,8 @@ const navItems = [
   { id: 'projects', icon: FiFolder, label: 'Projects', notificationCount: 0 },
   { id: 'messages', icon: FiMessageCircle, label: 'Messages', notificationCount: 3 },
   { id: 'calendar', icon: FiCalendar, label: 'Calendar', notificationCount: 0 },
+  { id: 'profile', icon: FiUser, label: 'Profile', notificationCount: 0 },
 ];
-
 
 const VerticalNavBar = () => {
   const { activeNavItemId, setActiveNavItemId } = useNav();
@@ -88,22 +87,21 @@ const VerticalNavBar = () => {
 
   const handleSettingsClick = () => {
     setActiveNavItemId('settings');
-    // You can add navigation for settings if needed
+    navigate('/settings');
   };
 
   return (
     <NavContainer
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      transition={{ duration: 0.5, ease: 'easeOut', type: 'spring', stiffness: 100 }}
     >
       <TopSection>
         <UserAvatar
           src="https://i.pravatar.cc/150?img=12"
           isOnline={true}
-          onClick={handleAvatarClick}
+          onClick={() => handleNavClick('profile')}
         />
-        <AddButton onClick={handleAddClick} />
       </TopSection>
 
       <MiddleSection>

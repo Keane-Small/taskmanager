@@ -1,6 +1,32 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for file upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/profiles/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not an image! Please upload an image.'), false);
+    }
+  }
+}).single('profilePicture');
 
 exports.createUser = async (req, res) => {
   try {
@@ -72,5 +98,47 @@ exports.deleteUser = async (req, res) => {
     res.json({ message: 'User deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    upload(req, res, async function(err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: 'File upload error' });
+      } else if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      const updates = {
+        fullName: req.body.fullName,
+        role: req.body.role,
+        bio: req.body.bio,
+        skills: req.body.skills ? req.body.skills.split(',').map(skill => skill.trim()) : []
+      };
+
+      if (req.file) {
+        updates.profilePicture = `/uploads/profiles/${req.file.filename}`;
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        updates,
+        { new: true }
+      ).select('-password');
+
+      res.json(user);
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 };
