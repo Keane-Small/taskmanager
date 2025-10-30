@@ -2,32 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ItemContainer = styled(motion.button)`
-  position: relative;
-  width: 100%;
-  padding: 12px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-  
-  &:focus {
-    outline: 2px solid #000000;
-    outline-offset: 2px;
-  }
-`;
-
 const ActiveBackground = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: #000000;
-  border-radius: 24px;
+  border-radius: 12px;
   z-index: 0;
 `;
 
@@ -37,9 +19,37 @@ const IconWrapper = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  color: ${props => props.$isActive ? '#FFFFFF' : '#000000'};
+  font-size: 22px;
+  color: ${props => props.$isActive ? '#FFFFFF' : '#6B7280'};
   transition: color 0.3s ease-in-out;
+`;
+
+const ItemContainer = styled(motion.button)`
+  position: relative;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  
+  &:hover {
+    background-color: ${props => props.$isActive ? 'transparent' : 'rgba(0, 0, 0, 0.03)'};
+  }
+  
+  &:hover ${IconWrapper} {
+    color: ${props => props.$isActive ? '#FFFFFF' : '#000000'};
+  }
+  
+  &:focus {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+  }
 `;
 
 const NotificationBadge = styled(motion.div)`
@@ -68,6 +78,7 @@ const NavItem = ({ icon: Icon, notificationCount, isActive, onClick, ariaLabel }
       transition={{ duration: 0.2 }}
       aria-label={ariaLabel}
       aria-current={isActive ? 'page' : undefined}
+      $isActive={isActive}
     >
       <AnimatePresence>
         {isActive && (

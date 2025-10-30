@@ -14,7 +14,7 @@ const ButtonContainer = styled(motion.button)`
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   
   &:focus {
     outline: 2px solid #000000;
@@ -31,7 +31,7 @@ const AddButton = ({ onClick }) => {
   return (
     <ButtonContainer
       onClick={onClick}
-      whileHover={{ scale: 1.1, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)' }}
+      whileHover={{ scale: 1.1, boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)' }}
       whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.2 }}
       aria-label="Add new item"

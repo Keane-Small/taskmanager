@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiHome, FiMessageSquare, FiBell, FiCalendar, FiSettings } from 'react-icons/fi';
+import { FiMessageCircle, FiBell, FiCalendar, FiSettings, FiFolder } from 'react-icons/fi';
+import { MdDashboard } from 'react-icons/md';
 import UserAvatar from './UserAvatar';
 import AddButton from './AddButton';
 import NavItem from './NavItem';
 
 import { useNav } from '../../context/NavContext';
-import { useNavigate } from 'react-router-dom';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
@@ -15,14 +15,19 @@ const NavContainer = styled(motion.nav)`
   top: 10px;
   bottom: 10px;
   width: 56px;
-  background-color: #FFFDD0;
-  border-radius: 12px;
-  padding: 12px 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  padding: 16px 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 1000;
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 const TopSection = styled.div`
@@ -39,7 +44,7 @@ const MiddleSection = styled.div`
   align-items: center;
   width: 100%;
   margin-top: 20px;
-  overflow-y: auto;
+  overflow: visible;
   
   &::-webkit-scrollbar {
     display: none;
@@ -59,25 +64,18 @@ const BottomSection = styled.div`
 `;
 
 const navItems = [
-  { id: 'home', icon: FiHome, label: 'Home', notificationCount: 0 },
-  { id: 'messages', icon: FiMessageSquare, label: 'Messages', notificationCount: 3 },
-  { id: 'notifications', icon: FiBell, label: 'Notifications', notificationCount: 7 },
+  { id: 'home', icon: MdDashboard, label: 'Dashboard', notificationCount: 0 },
+  { id: 'projects', icon: FiFolder, label: 'Projects', notificationCount: 0 },
+  { id: 'messages', icon: FiMessageCircle, label: 'Messages', notificationCount: 3 },
   { id: 'calendar', icon: FiCalendar, label: 'Calendar', notificationCount: 0 },
 ];
 
 
 const VerticalNavBar = () => {
   const { activeNavItemId, setActiveNavItemId } = useNav();
-  const navigate = useNavigate();
 
   const handleNavClick = (itemId) => {
     setActiveNavItemId(itemId);
-    if (itemId === 'messages') {
-      navigate('/messaging');
-    } else if (itemId === 'home') {
-      navigate('/');
-    }
-    // Add more navigation as needed
   };
 
   const handleAddClick = () => {
