@@ -1,33 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
-import { FiCheckCircle, FiUsers, FiTrello, FiZap, FiShield, FiBarChart2, FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi';
+import { FiCheckCircle, FiUsers, FiTrello, FiZap, FiShield, FiBarChart2 } from 'react-icons/fi';
+import AuthModal from '../components/AuthModal';
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
 
-  const handleContactChange = (e) => {
-    setContactForm({
-      ...contactForm,
-      [e.target.name]: e.target.value
-    });
+  const openAuthModal = (mode) => {
+    setAuthMode(mode);
+    setShowAuthModal(true);
   };
 
-  const handleContactSubmit = (e) => {
-    e.preventDefault();
-    // Here you would normally send to a backend
-    console.log('Contact form submitted:', contactForm);
-    setFormSubmitted(true);
-    setTimeout(() => {
-      setFormSubmitted(false);
-      setContactForm({ name: '', email: '', message: '' });
-    }, 3000);
+  const closeAuthModal = () => {
+    setShowAuthModal(false);
   };
 
   const scrollToSection = (sectionId) => {
@@ -49,16 +37,20 @@ const LandingPage = () => {
           <nav className="nav-links">
             <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Features</a>
             <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>About</a>
-            <a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Contact</a>
           </nav>
           <div className="auth-buttons">
-            <button className="btn-login" onClick={() => navigate('/login')}>
+            <button className="btn-login" onClick={() => openAuthModal('login')}>
               Log In
             </button>
-            <button className="btn-signup" onClick={() => navigate('/signup')}>
+            <button className="btn-signup" onClick={() => openAuthModal('signup')}>
               Get Started
             </button>
           </div>
+          <AuthModal
+            isOpen={showAuthModal}
+            onClose={closeAuthModal}
+            initialMode={authMode}
+          />
         </div>
       </header>
 
@@ -75,10 +67,10 @@ const LandingPage = () => {
             productive, and focused on what matters most.
           </p>
           <div className="hero-cta">
-            <button className="btn-primary" onClick={() => navigate('/signup')}>
+            <button className="btn-primary" onClick={() => openAuthModal('signup')}>
               Start Free Trial
             </button>
-            <button className="btn-secondary" onClick={() => navigate('/login')}>
+            <button className="btn-secondary" onClick={() => openAuthModal('login')}>
               Sign In
             </button>
           </div>
@@ -209,90 +201,6 @@ const LandingPage = () => {
               <div className="visual-element element-2"></div>
               <div className="visual-element element-3"></div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="contact-section" id="contact">
-        <div className="contact-container">
-          <div className="contact-info">
-            <h2 className="section-title">Get in Touch</h2>
-            <p className="contact-description">
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-            </p>
-            <div className="contact-details">
-              <div className="contact-detail-item">
-                <FiMail className="contact-icon" />
-                <div>
-                  <h4>Email</h4>
-                  <p>support@taskflow.com</p>
-                </div>
-              </div>
-              <div className="contact-detail-item">
-                <FiPhone className="contact-icon" />
-                <div>
-                  <h4>Phone</h4>
-                  <p>+1 (555) 123-4567</p>
-                </div>
-              </div>
-              <div className="contact-detail-item">
-                <FiMapPin className="contact-icon" />
-                <div>
-                  <h4>Office</h4>
-                  <p>123 Business Ave, Suite 100<br />San Francisco, CA 94102</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="contact-form-wrapper">
-            <form className="contact-form" onSubmit={handleContactSubmit}>
-              {formSubmitted && (
-                <div className="success-message">
-                  ✓ Message sent successfully! We'll get back to you soon.
-                </div>
-              )}
-              <div className="form-group">
-                <label htmlFor="contact-name">Your Name</label>
-                <input
-                  type="text"
-                  id="contact-name"
-                  name="name"
-                  placeholder="John Doe"
-                  value={contactForm.name}
-                  onChange={handleContactChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="contact-email">Your Email</label>
-                <input
-                  type="email"
-                  id="contact-email"
-                  name="email"
-                  placeholder="john@example.com"
-                  value={contactForm.email}
-                  onChange={handleContactChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="contact-message">Message</label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  rows="5"
-                  placeholder="Tell us how we can help you..."
-                  value={contactForm.message}
-                  onChange={handleContactChange}
-                  required
-                ></textarea>
-              </div>
-              <button type="submit" className="btn-contact-submit">
-                <FiSend />
-                <span>Send Message</span>
-              </button>
-            </form>
           </div>
         </div>
       </section>

@@ -13,4 +13,8 @@ router.get('/:id', auth, controller.getUserById);
 router.put('/:id', auth, controller.updateUser);
 router.delete('/:id', auth, controller.deleteUser);
 
+// Profile routes
+router.get('/profile/me', auth, controller.getProfile);
+router.put('/profile/update', auth, controller.updateProfile);
+
 module.exports = router;
