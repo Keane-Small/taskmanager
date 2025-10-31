@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiArrowRight, FiPlus } from 'react-icons/fi';
+import { FiArrowRight, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import AddProjectModal from '../components/AddProjectModal';
 import TaskBoard from '../components/TaskBoard';
+import ConfirmModal from '../components/ConfirmModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -78,10 +79,15 @@ const ProjectCard = styled.div`
   }
 `;
 
-const ArrowButton = styled.button`
+const ProjectActions = styled.div`
   position: absolute;
   top: 20px;
   right: 20px;
+  display: flex;
+  gap: 8px;
+`;
+
+const ArrowButton = styled.button`
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -95,6 +101,29 @@ const ArrowButton = styled.button`
   
   &:hover {
     background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const DeleteButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+  color: #ff0000;
+  
+  &:hover {
+    background-color: rgba(255, 0, 0, 0.2);
     transform: scale(1.1);
   }
   
@@ -196,6 +225,7 @@ const ProjectsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, projectId: null, projectName: '' });
 
   useEffect(() => {
     fetchProjects();
@@ -272,6 +302,36 @@ const ProjectsPage = () => {
     setSelectedProject(null);
   };
 
+  const handleDeleteProject = (projectId, projectName) => {
+    setDeleteConfirm({ isOpen: true, projectId, projectName });
+  };
+
+  const confirmDelete = async () => {
+    const { projectId } = deleteConfirm;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/projects/${projectId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setProjectList(projectList.filter(p => (p._id || p.id) !== projectId));
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    } finally {
+      setDeleteConfirm({ isOpen: false, projectId: null, projectName: '' });
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, projectId: null, projectName: '' });
+  };
+
   const calculatePercentage = (completed, total) => {
     if (total === 0) return 0;
     return Math.round((completed / total) * 100);
@@ -308,6 +368,16 @@ const ProjectsPage = () => {
         onSubmit={handleSubmitProject}
       />
 
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        title="Delete Project"
+        message={`Are you sure you want to delete "${deleteConfirm.projectName}"? This action cannot be undone and will remove all associated tasks.`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+
       {projectList.length === 0 ? (
         <div style={{ 
           display: 'flex', 
@@ -336,9 +406,20 @@ const ProjectsPage = () => {
             
             return (
               <ProjectCard key={project._id || project.id} color={project.color}>
-                <ArrowButton onClick={() => handleOpenProject(project)}>
-                  <FiArrowRight size={18} />
-                </ArrowButton>
+                <ProjectActions>
+                  <DeleteButton 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteProject(project._id || project.id, project.name);
+                    }}
+                    title="Delete project"
+                  >
+                    <FiTrash2 size={16} />
+                  </DeleteButton>
+                  <ArrowButton onClick={() => handleOpenProject(project)}>
+                    <FiArrowRight size={18} />
+                  </ArrowButton>
+                </ProjectActions>
                 <ProjectName>{project.name}</ProjectName>
                 <ProjectInfo>
                   <Label>Status:</Label> {project.status}

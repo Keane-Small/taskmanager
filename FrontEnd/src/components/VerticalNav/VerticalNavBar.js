@@ -9,6 +9,7 @@ import NavItem from './NavItem';
 
 import { useNav } from '../../context/NavContext';
 import { useMessages } from '../../context/MessageContext';
+import { useAuth } from '../../context/AuthContext';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
@@ -67,6 +68,7 @@ const BottomSection = styled.div`
 const VerticalNavBar = () => {
   const { activeNavItemId, setActiveNavItemId } = useNav();
   const { unreadCount } = useMessages();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
@@ -74,7 +76,6 @@ const VerticalNavBar = () => {
     { id: 'projects', icon: FiFolder, label: 'Projects', notificationCount: 0 },
     { id: 'messages', icon: FiMessageCircle, label: 'Messages', notificationCount: unreadCount },
     { id: 'calendar', icon: FiCalendar, label: 'Calendar', notificationCount: 0 },
-    { id: 'profile', icon: FiUser, label: 'Profile', notificationCount: 0 },
   ];
 
   const handleNavClick = (itemId) => {
@@ -91,7 +92,6 @@ const VerticalNavBar = () => {
 
   const handleSettingsClick = () => {
     setActiveNavItemId('settings');
-    navigate('/settings');
   };
 
   return (
@@ -102,9 +102,9 @@ const VerticalNavBar = () => {
     >
       <TopSection>
         <UserAvatar
-          src="https://i.pravatar.cc/150?img=12"
+          src={user?.profilePicture || "https://i.pravatar.cc/150?img=12"}
           isOnline={true}
-          onClick={() => handleNavClick('profile')}
+          onClick={() => handleNavClick('settings')}
         />
       </TopSection>
 

@@ -50,6 +50,12 @@ exports.markAsRead = async (req, res) => {
 exports.getUnreadCount = async (req, res) => {
   const { userId } = req.params;
   try {
+    // Validate ObjectId format
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.json({ count: 0 });
+    }
+
     const count = await DirectMessage.countDocuments({
       recipient: userId,
       $or: [

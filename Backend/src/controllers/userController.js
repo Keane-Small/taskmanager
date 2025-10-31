@@ -142,3 +142,113 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Update user profile (name, email)
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const userId = req.userId; // From auth middleware
+
+    // Check if email is already taken by another user
+    if (email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+    }
+
+    const updates = {};
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      updates,
+      { new: true }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Change user password
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.userId; // From auth middleware
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    // Get user with password
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Update profile image
+exports.updateProfileImage = async (req, res) => {
+  try {
+    upload(req, res, async function(err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: 'File upload error: ' + err.message });
+      } else if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: 'No image file provided' });
+      }
+
+      const userId = req.userId;
+      // Return full URL for the image
+      const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+      const profilePicture = `${baseUrl}/uploads/profiles/${req.file.filename}`;
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { profilePicture },
+        { new: true }
+      ).select('-password');
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json(user);
+    });
+  } catch (error) {
+    console.error('Error updating profile image:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
