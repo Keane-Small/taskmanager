@@ -199,7 +199,8 @@ const TaskBoard = ({ project, onClose }) => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/tasks?projectId=${project._id || project.id}`, {
+      const projectId = project._id || project.id;
+      const response = await fetch(`${API_URL}/tasks/project/${projectId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -207,8 +208,10 @@ const TaskBoard = ({ project, onClose }) => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched tasks:', data);
         setTasks(data);
       } else {
+        console.error('Failed to fetch tasks:', response.status);
         setTasks([]);
       }
     } catch (error) {
@@ -283,13 +286,13 @@ const TaskBoard = ({ project, onClose }) => {
     setActiveTask(null);
   };
 
-  const handleMoveTask = (task) => {
+  const handleMoveTask = async (task) => {
     let newStatus;
     if (task.status === 'todo') {
       newStatus = 'in-progress';
       
       // Show "Complete" state for 4-5 seconds when moving to in-progress
-      setCompletingTaskId(task.id);
+      setCompletingTaskId(task._id || task.id);
       setTimeout(() => {
         setCompletingTaskId(null);
       }, 4500); // 4.5 seconds
@@ -300,14 +303,35 @@ const TaskBoard = ({ project, onClose }) => {
       return; // Already completed
     }
 
+    // Optimistically update UI
     setTasks(prevTasks => {
       return prevTasks.map(t => {
-        if (t.id === task.id) {
+        if ((t._id || t.id) === (task._id || task.id)) {
           return { ...t, status: newStatus };
         }
         return t;
       });
     });
+
+    // Save to backend
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${API_URL}/tasks/${task._id || task.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      // Refetch to ensure data is in sync
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      // Revert on error
+      await fetchTasks();
+    }
   };
 
   const handleAddTask = () => {
@@ -320,32 +344,68 @@ const TaskBoard = ({ project, onClose }) => {
     setIsTaskModalOpen(true);
   };
 
-  const handleSubmitTask = (taskData) => {
-    if (selectedTask) {
-      // Edit existing task
-      setTasks(prevTasks => {
-        return prevTasks.map(t => {
-          if (t.id === selectedTask.id) {
-            return { ...t, ...taskData };
-          }
-          return t;
+  const handleSubmitTask = async (taskData) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (selectedTask) {
+        // Edit existing task
+        const response = await fetch(`${API_URL}/tasks/${selectedTask._id || selectedTask.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(taskData),
         });
-      });
-    } else {
-      // Add new task
-      const newTask = {
-        id: `task_${Date.now()}`,
-        ...taskData,
-        status: taskData.status || 'todo'
-      };
-      setTasks(prevTasks => [...prevTasks, newTask]);
+
+        if (response.ok) {
+          await fetchTasks(); // Refetch to get updated data
+        }
+      } else {
+        // Add new task
+        const response = await fetch(`${API_URL}/tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ...taskData,
+            projectId: project._id || project.id,
+            status: taskData.status || 'todo'
+          }),
+        });
+
+        if (response.ok) {
+          await fetchTasks(); // Refetch to get updated data
+        }
+      }
+    } catch (error) {
+      console.error('Error saving task:', error);
     }
+    
     setIsTaskModalOpen(false);
     setSelectedTask(null);
   };
 
-  const handleDeleteTask = (taskId) => {
-    setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        await fetchTasks(); // Refetch to get updated data
+      }
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+    
     setIsTaskModalOpen(false);
     setSelectedTask(null);
   };

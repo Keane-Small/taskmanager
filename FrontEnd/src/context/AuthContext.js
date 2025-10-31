@@ -38,10 +38,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('taskflow_user');
   };
 
+  const updateUser = (userData) => {
+    const updatedUser = { ...user, ...userData };
+    setUser(updatedUser);
+    localStorage.setItem('taskflow_user', JSON.stringify(updatedUser));
+  };
+
   const value = {
     user,
     login,
     logout,
+    updateUser,
     isAuthenticated: !!user,
     loading
   };
