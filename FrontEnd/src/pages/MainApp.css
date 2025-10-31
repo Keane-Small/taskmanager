@@ -1,5 +1,5 @@
 .main-app {
-  background-color: black;
+  background: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -20,9 +20,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #1a1a1a;
+  background-color: #FFFFFF;
   border-radius: 12px;
   margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .user-info {
@@ -32,7 +33,7 @@
 }
 
 .welcome-text {
-  color: white;
+  color: #2C3E50;
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -42,7 +43,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
-  background-color: #dc2626;
+  background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -52,9 +53,9 @@
 }
 
 .logout-btn:hover {
-  background-color: #b91c1c;
+  background: linear-gradient(135deg, #C0392B 0%, #A93226 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
 }
 
 .logout-btn svg {
@@ -63,16 +64,17 @@
 
 .content-area {
   flex: 1;
-  color: white;
+  color: #2C3E50;
   padding: 2rem;
 }
 
 .content-area h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
+  color: #2C3E50;
 }
 
 .content-area p {
-  color: #9ca3af;
+  color: #5A6C7D;
   font-size: 1.1rem;
 }

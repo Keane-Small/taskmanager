@@ -40,18 +40,20 @@ const AddProjectButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background-color: #000000;
+  background: linear-gradient(135deg, #107BAE 0%, #43A171 100%);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: all 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(16, 123, 174, 0.3);
   
   &:hover {
-    background-color: #333333;
+    background: linear-gradient(135deg, #0D6A96 0%, #38915F 100%);
     transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(16, 123, 174, 0.4);
   }
   
   &:active {
@@ -192,7 +194,7 @@ const ProgressBarContainer = styled.div`
 
 const ProgressBarFill = styled.div`
   height: 100%;
-  background-color: #000000;
+  background: linear-gradient(90deg, #107BAE 0%, #43A171 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
   width: ${props => props.$percentage}%;

@@ -40,7 +40,10 @@ const StatTitle = styled.h3`
 const StatValue = styled.div`
   font-size: 36px;
   font-weight: 700;
-  color: #000;
+  background: linear-gradient(135deg, #107BAE 0%, #43A171 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 8px;
 `;
 

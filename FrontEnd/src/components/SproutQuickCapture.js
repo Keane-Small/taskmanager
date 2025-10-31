@@ -7,7 +7,7 @@ import SproutChat from "./SproutChat";
 
 const FloatingButtonGroup = styled.div`
   position: fixed;
-  bottom: 30px;
+  bottom: 120px;
   right: 30px;
   display: flex;
   flex-direction: column;
@@ -18,7 +18,7 @@ const FloatingButtonGroup = styled.div`
 const FloatingButton = styled(motion.button)`
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #107BAE 0%, #43A171 100%);
   border: none;
   border-radius: 50%;
   display: flex;
@@ -26,12 +26,12 @@ const FloatingButton = styled(motion.button)`
   justify-content: center;
   font-size: 32px;
   cursor: pointer;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 8px 32px rgba(16, 123, 174, 0.5);
   transition: all 0.3s;
 
   &:hover {
     transform: scale(1.1);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 12px 40px rgba(16, 123, 174, 0.6);
   }
 
   &:active {
@@ -43,7 +43,7 @@ const SecondaryButton = styled(motion.button)`
   width: 56px;
   height: 56px;
   background: white;
-  border: 3px solid #667eea;
+  border: 3px solid #107BAE;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -65,15 +65,15 @@ const SecondaryButton = styled(motion.button)`
 
 const QuickCaptureBar = styled(motion.div)`
   position: fixed;
-  bottom: 30px;
+  bottom: 120px;
   right: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #107BAE 0%, #43A171 100%);
   border-radius: 50px;
   padding: 12px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 32px rgba(16, 123, 174, 0.4);
   z-index: 1000;
   backdrop-filter: blur(10px);
   min-width: 400px;
