@@ -760,6 +760,13 @@ const SproutQuickCapture = ({ onTaskCreate, onProjectCreate, projects = [], onRe
             exit={{ scale: 0.8, opacity: 0, x: 100 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
+            <IconButton 
+              onClick={() => setIsExpanded(false)}
+              title="Close"
+              style={{ marginRight: '4px' }}
+            >
+              ✕
+            </IconButton>
             <SproutIcon 
               onClick={() => setShowChat(true)}
               title="Chat with Sprout AI"
