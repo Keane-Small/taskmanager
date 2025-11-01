@@ -102,8 +102,8 @@ const Bar = styled.div`
 `;
 
 const DeviationSection = styled.div`
-  background-color: ${props => props.isNegative ? '#fff3cd' : props.isPositive ? '#d4edda' : '#e9ecef'};
-  border-left: 4px solid ${props => props.isNegative ? '#ffc107' : props.isPositive ? '#28a745' : '#6c757d'};
+  background-color: ${props => props.isNegative ? 'rgba(255, 193, 7, 0.15)' : props.isPositive ? 'rgba(142, 182, 155, 0.2)' : 'rgba(142, 182, 155, 0.1)'};
+  border-left: 4px solid ${props => props.isNegative ? '#ffc107' : props.isPositive ? '#8EB69B' : '#8EB69B'};
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -171,7 +171,7 @@ const TimeComparisonWidget = ({ plannedHours = 40, actualHours = 38 }) => {
   const isNegative = deviation > 0 && isSignificantDeviation; // Over planned
   const isPositive = deviation < 0 && isSignificantDeviation; // Under planned
   
-  const deviationColor = isNegative ? '#856404' : isPositive ? '#155724' : '#495057';
+  const deviationColor = isNegative ? '#856404' : isPositive ? '#163832' : '#163832';
   
   const handleTimeLogClick = () => {
     console.log('Time Log button clicked');

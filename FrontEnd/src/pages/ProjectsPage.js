@@ -14,7 +14,7 @@ const ContentBox = styled.div`
   top: 10px;
   right: 15px;
   bottom: 10px;
-  background-color: #FFFFFF;
+  background-color: #DAF1DE;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   padding: 30px;
@@ -25,7 +25,7 @@ const Heading = styled.h1`
   margin: 0 0 30px 0;
   font-size: 32px;
   font-weight: 600;
-  color: #000000;
+  color: #0B2B26;
 `;
 
 const Header = styled.div`
@@ -40,7 +40,7 @@ const AddProjectButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #107BAE 0%, #43A171 100%);
+  background: linear-gradient(135deg, #235347 0%, #163832 100%);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -48,12 +48,12 @@ const AddProjectButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s, transform 0.2s;
-  box-shadow: 0 4px 12px rgba(16, 123, 174, 0.3);
+  box-shadow: 0 4px 12px rgba(35, 83, 71, 0.3);
   
   &:hover {
-    background: linear-gradient(135deg, #0D6A96 0%, #38915F 100%);
+    background: linear-gradient(135deg, #163832 0%, #0B2B26 100%);
     transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(16, 123, 174, 0.4);
+    box-shadow: 0 6px 16px rgba(35, 83, 71, 0.4);
   }
   
   &:active {
@@ -69,7 +69,7 @@ const ProjectsGrid = styled.div`
 
 const ProjectCard = styled.div`
   position: relative;
-  background-color: ${props => props.color || '#F9F9F9'};
+  background-color: ${props => props.color || '#FFFFFF'};
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -389,8 +389,8 @@ const ProjectsPage = () => {
           height: '60%',
           gap: '20px'
         }}>
-          <h2 style={{ color: '#666' }}>No Projects Yet</h2>
-          <p style={{ color: '#999' }}>Create your first project to get started</p>
+          <h2 style={{ color: '#163832' }}>No Projects Yet</h2>
+          <p style={{ color: '#8EB69B' }}>Create your first project to get started</p>
           <AddProjectButton onClick={handleAddProject}>
             <FiPlus size={18} />
             Create New Project
@@ -453,7 +453,7 @@ const ProjectsPage = () => {
                       return <Avatar key={index}>{displayText}</Avatar>;
                     })
                   ) : (
-                    <span style={{ fontSize: '14px', color: '#999' }}>No team members</span>
+                    <span style={{ fontSize: '14px', color: '#8EB69B' }}>No team members</span>
                   )}
                 </Collaborators>
                 <ProgressSection>

@@ -105,8 +105,8 @@ const Tab = styled.button`
   flex: 1;
   padding: 10px 16px;
   border: none;
-  background-color: ${(props) => (props.$isActive ? "#000" : "transparent")};
-  color: ${(props) => (props.$isActive ? "#fff" : "#666")};
+  background-color: ${(props) => (props.$isActive ? "#235347" : "transparent")};
+  color: ${(props) => (props.$isActive ? "#fff" : "#163832")};
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -114,7 +114,7 @@ const Tab = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${(props) => (props.$isActive ? "#000" : "#f0f0f0")};
+    background-color: ${(props) => (props.$isActive ? "#163832" : "rgba(142, 182, 155, 0.2)")};
   }
 `;
 
@@ -131,12 +131,12 @@ const ConversationItem = styled(motion.div)`
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 4px;
-  background-color: ${(props) => (props.$isActive ? "#000" : "transparent")};
-  color: ${(props) => (props.$isActive ? "#fff" : "#000")};
+  background-color: ${(props) => (props.$isActive ? "#235347" : "transparent")};
+  color: ${(props) => (props.$isActive ? "#fff" : "#0B2B26")};
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${(props) => (props.$isActive ? "#000" : "#f0f0f0")};
+    background-color: ${(props) => (props.$isActive ? "#163832" : "rgba(142, 182, 155, 0.2)")};
   }
 `;
 
@@ -200,8 +200,8 @@ const Timestamp = styled.div`
 `;
 
 const UnreadBadge = styled.div`
-  background-color: ${(props) => (props.$isActive ? "#fff" : "#000")};
-  color: ${(props) => (props.$isActive ? "#000" : "#fff")};
+  background-color: ${(props) => (props.$isActive ? "#DAF1DE" : "#235347")};
+  color: ${(props) => (props.$isActive ? "#0B2B26" : "#fff")};
   border-radius: 12px;
   padding: 3px 8px;
   font-size: 12px;
@@ -325,8 +325,8 @@ const Message = styled(motion.div)`
       ? "16px 16px 4px 16px" 
       : "16px 16px 16px 4px"
   };
-  background-color: ${(props) => (props.$isSent ? "#000" : "#f0f0f0")};
-  color: ${(props) => (props.$isSent ? "#fff" : "#000")};
+  background-color: ${(props) => (props.$isSent ? "#235347" : "#DAF1DE")};
+  color: ${(props) => (props.$isSent ? "#fff" : "#0B2B26")};
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;

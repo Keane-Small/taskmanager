@@ -58,7 +58,7 @@ const NavButton = styled.button`
 const MonthYear = styled.h1`
   font-size: 28px;
   font-weight: 600;
-  color: #000000;
+  color: #0B2B26;
   margin: 0;
   min-width: 200px;
   text-align: center;
@@ -73,15 +73,15 @@ const ViewButton = styled.button`
   padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  background-color: ${props => props.$active ? '#000000' : '#FFFFFF'};
-  color: ${props => props.$active ? '#FFFFFF' : '#666666'};
+  background-color: ${props => props.$active ? '#235347' : '#FFFFFF'};
+  color: ${props => props.$active ? '#FFFFFF' : '#163832'};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   
   &:hover {
-    background-color: ${props => props.$active ? '#000000' : '#F0F0F0'};
+    background-color: ${props => props.$active ? '#163832' : 'rgba(142, 182, 155, 0.2)'};
   }
 `;
 
@@ -123,7 +123,7 @@ const DayName = styled.div`
 const DayNumber = styled.div`
   font-size: 20px;
   font-weight: 600;
-  color: ${props => props.$isToday ? '#FFFFFF' : '#000000'};
+  color: ${props => props.$isToday ? '#FFFFFF' : '#0B2B26'};
   width: 36px;
   height: 36px;
   display: flex;
@@ -131,7 +131,7 @@ const DayNumber = styled.div`
   justify-content: center;
   margin: 0 auto;
   border-radius: 50%;
-  background-color: ${props => props.$isToday ? '#000000' : 'transparent'};
+  background-color: ${props => props.$isToday ? '#235347' : 'transparent'};
 `;
 
 const CalendarBody = styled.div`
@@ -548,8 +548,8 @@ const CalendarPage = () => {
           height: '60%',
           gap: '20px'
         }}>
-          <h2 style={{ color: '#666' }}>No Projects Yet</h2>
-          <p style={{ color: '#999' }}>Create projects with due dates to see them in your calendar</p>
+          <h2 style={{ color: '#163832' }}>No Projects Yet</h2>
+          <p style={{ color: '#8EB69B' }}>Create projects with due dates to see them in your calendar</p>
         </div>
       ) : (
         <CalendarGrid>

@@ -120,15 +120,15 @@ const ProjectHealthCard = ({
   const statusConfig = {
     'On Track': {
       icon: FiCheckCircle,
-      backgroundColor: '#d4edda',
-      color: '#155724',
-      progressGradient: 'linear-gradient(90deg, #28a745 0%, #20c997 100%)',
-      progressColor: '#28a745',
-      deadlineBorderColor: '#28a745'
+      backgroundColor: 'rgba(142, 182, 155, 0.2)',
+      color: '#163832',
+      progressGradient: 'linear-gradient(90deg, #8EB69B 0%, #235347 100%)',
+      progressColor: '#8EB69B',
+      deadlineBorderColor: '#8EB69B'
     },
     'At Risk': {
       icon: FiAlertCircle,
-      backgroundColor: '#fff3cd',
+      backgroundColor: 'rgba(255, 193, 7, 0.15)',
       color: '#856404',
       progressGradient: 'linear-gradient(90deg, #ffc107 0%, #fd7e14 100%)',
       progressColor: '#ffc107',
@@ -136,7 +136,7 @@ const ProjectHealthCard = ({
     },
     'Behind Schedule': {
       icon: FiAlertCircle,
-      backgroundColor: '#f8d7da',
+      backgroundColor: 'rgba(220, 53, 69, 0.15)',
       color: '#721c24',
       progressGradient: 'linear-gradient(90deg, #dc3545 0%, #c82333 100%)',
       progressColor: '#dc3545',
