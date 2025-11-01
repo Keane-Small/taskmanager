@@ -1,22 +1,45 @@
 import React from 'react';
 import styled from 'styled-components';
+import ProjectHealthCard from '../components/ProjectHealthCard';
+import TimeComparisonWidget from '../components/TimeComparisonWidget';
 
 const DashboardContainer = styled.div`
   width: 100%;
   height: 100%;
   padding: 0;
   background-color: transparent;
+  margin-top: -2rem;
+  margin-left: -2rem;
 `;
 
 const DashboardContent = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 0;
+`;
+
+const ProjectHealthSection = styled.div`
+  grid-column: 1 / -1;
+  margin-bottom: 20px;
+`;
+
+const SectionTitle = styled.h2`
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+`;
+
+const ProjectHealthGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 `;
 
 const StatCard = styled.div`
-  background: white;
+  background: #DAF1DE;
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -40,7 +63,7 @@ const StatTitle = styled.h3`
 const StatValue = styled.div`
   font-size: 36px;
   font-weight: 700;
-  background: linear-gradient(135deg, #107BAE 0%, #43A171 100%);
+  background: linear-gradient(135deg, #235347 0%, #8EB69B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -54,7 +77,7 @@ const StatSubtext = styled.p`
 `;
 
 const ChartContainer = styled.div`
-  background: white;
+  background: #DAF1DE;
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -66,13 +89,52 @@ const ChartTitle = styled.h3`
   margin: 0 0 20px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #000;
+  color: #0B2B26;
 `;
 
 const DashboardPage = () => {
+  // Sample project data
+  const projects = [
+    {
+      name: 'Website Redesign',
+      status: 'On Track',
+      completionPercentage: 75,
+      nextDeadline: '2025-11-15'
+    },
+    {
+      name: 'Mobile App Development',
+      status: 'At Risk',
+      completionPercentage: 45,
+      nextDeadline: '2025-11-10'
+    },
+    {
+      name: 'Marketing Campaign',
+      status: 'Behind Schedule',
+      completionPercentage: 30,
+      nextDeadline: '2025-11-08'
+    }
+  ];
+
   return (
     <DashboardContainer>
       <DashboardContent>
+        <ProjectHealthSection>
+          <SectionTitle>Project Health Overview</SectionTitle>
+          <ProjectHealthGrid>
+            {projects.map((project, index) => (
+              <ProjectHealthCard
+                key={index}
+                projectName={project.name}
+                status={project.status}
+                completionPercentage={project.completionPercentage}
+                nextDeadline={project.nextDeadline}
+              />
+            ))}
+          </ProjectHealthGrid>
+        </ProjectHealthSection>
+
+        <TimeComparisonWidget plannedHours={40} actualHours={38} />
+
         <StatCard>
           <StatTitle>Total Projects</StatTitle>
           <StatValue>9</StatValue>

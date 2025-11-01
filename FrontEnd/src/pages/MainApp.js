@@ -177,10 +177,19 @@ const AppContent = () => {
           <div className="user-info">
             <span className="welcome-text">Welcome, {user?.name || user?.email || 'User'}</span>
           </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            <FiLogOut />
-            <span>Logout</span>
-          </button>
+          <div className="user-profile">
+            <img 
+              src={user?.profilePicture || "https://i.pravatar.cc/150?img=12"} 
+              alt="Profile"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2px solid #235347'
+              }}
+            />
+          </div>
         </div>
         <div className="content-area">
           {renderContent()}
