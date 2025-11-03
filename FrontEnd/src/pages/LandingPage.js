@@ -33,55 +33,51 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="landing-page">
-      {/* Navigation Header */}
-      <header className="landing-header">
-        <div className="header-content">
-          <div className="logo">
-            <FiCheckCircle className="logo-icon" />
-            <span className="logo-text">TaskFlow</span>
+    <>
+      <div className={`landing-page ${showAuthModal ? 'modal-open' : ''}`}>
+        {/* Navigation Header */}
+        <header className="landing-header">
+          <div className="header-content">
+            <div className="logo">
+              <FiCheckCircle className="logo-icon" />
+              <span className="logo-text">TaskFlow</span>
+            </div>
+            <nav className="nav-links">
+              <a
+                href="#features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("features");
+                }}
+              >
+                Features
+              </a>
+              <a
+                href="#about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection("about");
+                }}
+              >
+                About
+              </a>
+            </nav>
+            <div className="auth-buttons">
+              <button
+                className="btn-login"
+                onClick={() => openAuthModal("login")}
+              >
+                Log In
+              </button>
+              <button
+                className="btn-signup"
+                onClick={() => openAuthModal("signup")}
+              >
+                Get Started
+              </button>
+            </div>
           </div>
-          <nav className="nav-links">
-            <a
-              href="#features"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("features");
-              }}
-            >
-              Features
-            </a>
-            <a
-              href="#about"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("about");
-              }}
-            >
-              About
-            </a>
-          </nav>
-          <div className="auth-buttons">
-            <button
-              className="btn-login"
-              onClick={() => openAuthModal("login")}
-            >
-              Log In
-            </button>
-            <button
-              className="btn-signup"
-              onClick={() => openAuthModal("signup")}
-            >
-              Get Started
-            </button>
-          </div>
-          <AuthModal
-            isOpen={showAuthModal}
-            onClose={closeAuthModal}
-            initialMode={authMode}
-          />
-        </div>
-      </header>
+        </header>
 
       {/* Hero Section */}
       <section className="hero-section">
@@ -276,6 +272,14 @@ const LandingPage = () => {
         </div>
       </footer>
     </div>
+    
+    {/* AuthModal rendered outside the blurred content */}
+    <AuthModal
+      isOpen={showAuthModal}
+      onClose={closeAuthModal}
+      initialMode={authMode}
+    />
+  </>
   );
 };
 

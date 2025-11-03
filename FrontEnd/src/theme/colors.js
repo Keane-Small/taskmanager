@@ -2,10 +2,10 @@
 export const colors = {
   // Primary Colors
   primary: {
-    main: '#107BAE',      // Ocean Blue
-    light: '#43A171',     // Teal Green
-    lighter: '#85C44B',   // Fresh Green
-    lightest: '#65B15E',  // Lime Green
+    main: '#2D5A3D',      // Dark Green (primary)
+    light: '#3A6B4D',     // Medium Dark Green
+    lighter: '#4A7C5D',   // Light Dark Green
+    accent: '#107BAE',    // Ocean Blue (accent)
   },
   
   // Background Colors
@@ -26,10 +26,10 @@ export const colors = {
   
   // Accent Colors
   accent: {
-    success: '#43A171',    // Green
+    success: '#2D5A3D',    // Dark Green
     warning: '#F39C12',    // Orange
     error: '#E74C3C',      // Red
-    info: '#107BAE',       // Blue
+    info: '#3A6B4D',       // Medium Dark Green
   },
   
   // UI Element Colors
@@ -42,8 +42,9 @@ export const colors = {
   
   // Gradient
   gradient: {
-    primary: 'linear-gradient(135deg, #107BAE 0%, #43A171 100%)',
-    secondary: 'linear-gradient(135deg, #85C44B 0%, #65B15E 100%)',
+    primary: '#2D5A3D',
+    secondary: '#3A6B4D',
+    accent: '#4A7C5D',
     soft: 'linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%)',
   }
 };

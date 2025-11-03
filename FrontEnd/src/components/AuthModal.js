@@ -220,31 +220,35 @@ const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1000;
+  pointer-events: auto;
 `;
 
 const ModalContainer = styled(motion.div)`
   position: fixed;
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
   padding: 2.5rem;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   z-index: 1001;
-  width: 100%;
+  width: 90%;
   max-width: 440px;
+  min-width: 320px;
   border: 1px solid rgba(0, 0, 0, 0.1);
+  pointer-events: auto;
+  margin: 0;
+  box-sizing: border-box;
 
   .toggle-mode-btn {
     background: none;
     border: none;
-    color: #007bff;
+    color: #2D5A3D;
     font-weight: 600;
     cursor: pointer;
     padding: 0;
@@ -252,6 +256,7 @@ const ModalContainer = styled(motion.div)`
     
     &:hover {
       text-decoration: underline;
+      color: #1F3E2A;
     }
   }
 
