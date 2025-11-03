@@ -106,7 +106,7 @@ const LandingPage = () => {
             </button>
           </div>
           <p className="hero-note">
-            ✓ No credit card required • ✓ Free 30-day trial • ✓ Cancel anytime
+            ✓ No credit card required • ✓ Free to use 
           </p>
         </div>
         <div className="hero-visual">
