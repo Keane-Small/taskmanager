@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
   bio: { type: String },
   skills: [String],
   profilePicture: { type: String },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

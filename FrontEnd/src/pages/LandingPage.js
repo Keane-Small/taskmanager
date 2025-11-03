@@ -73,7 +73,7 @@ const LandingPage = () => {
                 className="btn-signup"
                 onClick={() => openAuthModal("signup")}
               >
-                Get Started
+               Sign Up
               </button>
             </div>
           </div>
@@ -96,13 +96,13 @@ const LandingPage = () => {
               className="btn-primary"
               onClick={() => openAuthModal("signup")}
             >
-              Start Free Trial
+             Sign Up Now
             </button>
             <button
               className="btn-secondary"
               onClick={() => openAuthModal("login")}
             >
-              Sign In
+              Sign Login
             </button>
           </div>
           <p className="hero-note">
@@ -255,8 +255,8 @@ const LandingPage = () => {
           <p className="cta-subtitle">
             Join thousands of teams already using TaskFlow to get more done.
           </p>
-          <button className="btn-cta" onClick={() => navigate("/signup")}>
-            Get Started Free
+          <button className="btn-cta" onClick={() => openAuthModal("signup")}>
+            Sign Up Now
           </button>
         </div>
       </section>

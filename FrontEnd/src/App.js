@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import MainApp from './pages/MainApp';
+import ResetPassword from './components/ResetPassword';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -62,6 +63,7 @@ function App() {
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/app" element={<ProtectedRoute><MainApp /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
