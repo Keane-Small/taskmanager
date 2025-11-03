@@ -229,8 +229,8 @@ const Overlay = styled(motion.div)`
 
 const ModalContainer = styled(motion.div)`
   position: fixed;
-  top: 45%;
-  left: 50%;
+  top: 20%;
+  left:35%;
   transform: translate(-50%, -50%);
   background: white;
   padding: 2.5rem;
