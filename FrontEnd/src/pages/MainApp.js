@@ -55,7 +55,8 @@ const AppContent = () => {
         body: JSON.stringify({
           name: projectData.name,
           status: projectData.status || 'Planning',
-          dueDate: projectData.dueDate || 'TBD',
+          startDate: projectData.startDate || 'TBD',
+          endDate: projectData.endDate || 'TBD',
           collaborators: projectData.collaborators || [],
           color: ['#FFE5E5', '#E5F3FF', '#E5FFE5', '#FFF5E5', '#F5E5FF'][Math.floor(Math.random() * 5)],
         }),

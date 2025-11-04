@@ -247,7 +247,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     status: 'Planning',
-    dueDate: '',
+    startDate: '',
+    endDate: '',
     collaborators: []
   });
   
@@ -325,7 +326,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     const projectData = {
       name: formData.name,
       status: formData.status,
-      dueDate: formData.dueDate || 'TBD',
+      startDate: formData.startDate || 'TBD',
+      endDate: formData.endDate || 'TBD',
       collaborators: formData.collaborators.map(c => ({
         userId: c.userId,
         role: c.role
@@ -338,7 +340,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       status: 'Planning',
-      dueDate: '',
+      startDate: '',
+      endDate: '',
       collaborators: []
     });
     setSearchQuery('');
@@ -348,7 +351,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       status: 'Planning',
-      dueDate: '',
+      startDate: '',
+      endDate: '',
       collaborators: []
     });
     setSearchQuery('');
@@ -404,11 +408,21 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               </FormGroup>
               
               <FormGroup>
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel>Start Date</FormLabel>
                 <Input
                   type="date"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <FormLabel>End Date (Due Date)</FormLabel>
+                <Input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
                   onChange={handleInputChange}
                 />
               </FormGroup>
