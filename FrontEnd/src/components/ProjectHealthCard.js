@@ -37,8 +37,8 @@ const StatusBadge = styled.div`
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
-  background-color: ${props => props.backgroundColor};
-  color: ${props => props.color};
+  background-color: ${props => props.$backgroundColor};
+  color: ${props => props.$color};
 `;
 
 const ProgressSection = styled.div`
@@ -56,8 +56,8 @@ const ProgressBarContainer = styled.div`
 
 const ProgressBar = styled.div`
   height: 100%;
-  width: ${props => props.percentage}%;
-  background: ${props => props.gradient};
+  width: ${props => props.$percentage}%;
+  background: ${props => props.$gradient};
   transition: width 0.5s ease;
   border-radius: 5px;
 `;
@@ -72,7 +72,7 @@ const ProgressText = styled.div`
 
 const ProgressPercentage = styled.span`
   font-weight: 600;
-  color: ${props => props.color};
+  color: ${props => props.$color};
   font-size: 14px;
 `;
 
@@ -83,11 +83,11 @@ const DeadlineSection = styled.div`
   padding: 12px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  border-left: 3px solid ${props => props.borderColor};
+  border-left: 3px solid ${props => props.$borderColor};
 `;
 
 const DeadlineIcon = styled.div`
-  color: ${props => props.color};
+  color: ${props => props.$color};
   display: flex;
   align-items: center;
 `;
@@ -163,8 +163,8 @@ const ProjectHealthCard = ({
       <Header>
         <ProjectName>{projectName}</ProjectName>
         <StatusBadge 
-          backgroundColor={config.backgroundColor} 
-          color={config.color}
+          $backgroundColor={config.backgroundColor} 
+          $color={config.color}
         >
           <StatusIcon size={16} />
           {status}
@@ -174,20 +174,20 @@ const ProjectHealthCard = ({
       <ProgressSection>
         <ProgressBarContainer>
           <ProgressBar 
-            percentage={completionPercentage} 
-            gradient={config.progressGradient}
+            $percentage={completionPercentage} 
+            $gradient={config.progressGradient}
           />
         </ProgressBarContainer>
         <ProgressText>
           <span>Progress</span>
-          <ProgressPercentage color={config.progressColor}>
+          <ProgressPercentage $color={config.progressColor}>
             {completionPercentage}%
           </ProgressPercentage>
         </ProgressText>
       </ProgressSection>
 
-      <DeadlineSection borderColor={config.deadlineBorderColor}>
-        <DeadlineIcon color={config.progressColor}>
+      <DeadlineSection $borderColor={config.deadlineBorderColor}>
+        <DeadlineIcon $color={config.progressColor}>
           <FiClock size={20} />
         </DeadlineIcon>
         <DeadlineText>

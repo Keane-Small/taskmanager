@@ -70,13 +70,13 @@ const ColorDot = styled.span`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: ${props => props.color};
+  background-color: ${props => props.$color};
 `;
 
 const HoursText = styled.span`
   font-size: 16px;
   font-weight: 700;
-  color: ${props => props.color};
+  color: ${props => props.$color};
 `;
 
 const BarContainer = styled.div`
@@ -90,8 +90,8 @@ const BarContainer = styled.div`
 
 const Bar = styled.div`
   height: 100%;
-  width: ${props => props.percentage}%;
-  background: ${props => props.gradient};
+  width: ${props => props.$percentage}%;
+  background: ${props => props.$gradient};
   transition: width 0.6s ease;
   display: flex;
   align-items: center;
@@ -102,8 +102,8 @@ const Bar = styled.div`
 `;
 
 const DeviationSection = styled.div`
-  background-color: ${props => props.isNegative ? 'rgba(255, 193, 7, 0.15)' : props.isPositive ? 'rgba(142, 182, 155, 0.2)' : 'rgba(142, 182, 155, 0.1)'};
-  border-left: 4px solid ${props => props.isNegative ? '#ffc107' : props.isPositive ? '#8EB69B' : '#8EB69B'};
+  background-color: ${props => props.$isNegative ? 'rgba(255, 193, 7, 0.15)' : props.$isPositive ? 'rgba(142, 182, 155, 0.2)' : 'rgba(142, 182, 155, 0.1)'};
+  border-left: 4px solid ${props => props.$isNegative ? '#ffc107' : props.$isPositive ? '#8EB69B' : '#8EB69B'};
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -120,7 +120,7 @@ const DeviationLabel = styled.div`
 const DeviationValue = styled.div`
   font-size: 18px;
   font-weight: 700;
-  color: ${props => props.color};
+  color: ${props => props.$color};
   display: flex;
   align-items: center;
   gap: 6px;
@@ -208,15 +208,15 @@ const TimeComparisonWidget = ({ plannedHours = 40, actualHours = 38 }) => {
         <ChartRow>
           <ChartLabel>
             <LabelText>
-              <ColorDot color="#235347" />
+              <ColorDot $color="#235347" />
               Planned Hours
             </LabelText>
-            <HoursText color="#235347">{plannedHours}h</HoursText>
+            <HoursText $color="#235347">{plannedHours}h</HoursText>
           </ChartLabel>
           <BarContainer>
             <Bar 
-              percentage={plannedPercentage}
-              gradient="linear-gradient(90deg, #235347 0%, #163832 100%)"
+              $percentage={plannedPercentage}
+              $gradient="linear-gradient(90deg, #235347 0%, #163832 100%)"
             />
           </BarContainer>
         </ChartRow>
@@ -224,23 +224,23 @@ const TimeComparisonWidget = ({ plannedHours = 40, actualHours = 38 }) => {
         <ChartRow>
           <ChartLabel>
             <LabelText>
-              <ColorDot color="#8EB69B" />
+              <ColorDot $color="#8EB69B" />
               Actual Hours Spent
             </LabelText>
-            <HoursText color="#8EB69B">{actualHours}h</HoursText>
+            <HoursText $color="#8EB69B">{actualHours}h</HoursText>
           </ChartLabel>
           <BarContainer>
             <Bar 
-              percentage={actualPercentage}
-              gradient="linear-gradient(90deg, #8EB69B 0%, #DAF1DE 100%)"
+              $percentage={actualPercentage}
+              $gradient="linear-gradient(90deg, #8EB69B 0%, #DAF1DE 100%)"
             />
           </BarContainer>
         </ChartRow>
       </ChartContainer>
 
-      <DeviationSection isNegative={isNegative} isPositive={isPositive}>
+      <DeviationSection $isNegative={isNegative} $isPositive={isPositive}>
         <DeviationLabel>Deviation</DeviationLabel>
-        <DeviationValue color={deviationColor}>
+        <DeviationValue $color={deviationColor}>
           {deviation > 0 ? '+' : ''}{deviation}h
           <DeviationText>
             ({deviation > 0 ? '+' : ''}{deviationPercentage}%)

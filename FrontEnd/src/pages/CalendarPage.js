@@ -8,10 +8,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const ContentBox = styled.div`
   position: fixed;
-  left: 95px;
-  top: 10px;
-  right: 15px;
-  bottom: 10px;
+  left: 100px;
+  top: 95px;
+  right: 20px;
+  bottom: 15px;
   background-color: #FAFAFA;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);

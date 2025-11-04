@@ -10,6 +10,7 @@ import MessagesPage from './MessagesPage';
 import CalendarPage from './CalendarPage';
 import SettingsPage from './SettingsPage';
 import SproutQuickCapture from '../components/SproutQuickCapture';
+import NotificationCenter from '../components/NotificationCenter';
 import './MainApp.css';
 
 const AppContent = () => {
@@ -177,7 +178,9 @@ const AppContent = () => {
           <div className="user-info">
             <span className="welcome-text">Welcome, {user?.name || user?.email || 'User'}</span>
           </div>
-          <div className="user-profile">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <NotificationCenter />
+            <div className="user-profile">
             <img 
               src={user?.profilePicture || "https://i.pravatar.cc/150?img=12"} 
               alt="Profile"
@@ -189,6 +192,7 @@ const AppContent = () => {
                 border: '2px solid #235347'
               }}
             />
+            </div>
           </div>
         </div>
         <div className="content-area">

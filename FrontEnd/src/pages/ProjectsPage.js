@@ -10,10 +10,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const ContentBox = styled.div`
   position: fixed;
-  left: 95px;
-  top: 10px;
-  right: 15px;
-  bottom: 10px;
+  left: 100px;
+  top: 95px;
+  right: 20px;
+  bottom: 15px;
   background-color: #DAF1DE;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -271,8 +271,7 @@ const ProjectsPage = () => {
         ...projectData,
         color: projectColors[projectList.length % projectColors.length],
         totalTasks: 0,
-        completedTasks: 0,
-        userId: user?._id || user?.id
+        completedTasks: 0
       };
 
       const response = await fetch(`${API_URL}/projects`, {
@@ -289,10 +288,13 @@ const ProjectsPage = () => {
         setProjectList([...projectList, createdProject]);
         handleCloseModal();
       } else {
-        console.error('Failed to create project');
+        const errorData = await response.json();
+        console.error('Failed to create project:', errorData);
+        alert(`Failed to create project: ${errorData.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error creating project:', error);
+      alert('Error creating project. Please check console and try again.');
     }
   };
 

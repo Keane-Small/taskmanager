@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FiX, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import CommentSection from './CommentSection';
 
 const ModalOverlay = styled(motion.div)`
   position: fixed;
@@ -21,9 +22,25 @@ const ModalContent = styled(motion.div)`
   border-radius: 16px;
   padding: 30px;
   width: 90%;
-  max-width: 500px;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   position: relative;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #F0F0F0;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #CCC;
+    border-radius: 4px;
+  }
 `;
 
 const ModalHeader = styled.div`
@@ -204,14 +221,14 @@ const Button = styled.button`
   cursor: pointer;
   transition: all 0.2s;
   
-  ${props => props.variant === 'primary' ? `
+  ${props => props.$variant === 'primary' ? `
     background-color: #000000;
     color: #FFFFFF;
     
     &:hover {
       background-color: #333333;
     }
-  ` : props.variant === 'danger' ? `
+  ` : props.$variant === 'danger' ? `
     background-color: #FF4444;
     color: #FFFFFF;
     
@@ -425,18 +442,22 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
               
               <ButtonGroup>
                 {task && (
-                  <Button type="button" variant="danger" onClick={handleDelete}>
+                  <Button type="button" $variant="danger" onClick={handleDelete}>
                     Delete
                   </Button>
                 )}
                 <Button type="button" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
+                <Button type="submit" $variant="primary">
                   {task ? 'Save Changes' : 'Add Task'}
                 </Button>
               </ButtonGroup>
             </form>
+            
+            {task && task._id && (
+              <CommentSection taskId={task._id} />
+            )}
           </ModalContent>
         </ModalOverlay>
       )}

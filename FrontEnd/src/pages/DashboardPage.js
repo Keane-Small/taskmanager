@@ -2,21 +2,25 @@ import React from 'react';
 import styled from 'styled-components';
 import ProjectHealthCard from '../components/ProjectHealthCard';
 import TimeComparisonWidget from '../components/TimeComparisonWidget';
+import ActivityFeed from '../components/ActivityFeed';
 
 const DashboardContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  background-color: transparent;
-  margin-top: -2rem;
-  margin-left: -2rem;
+  position: fixed;
+  left: 100px;
+  top: 95px;
+  right: 20px;
+  bottom: 15px;
+  background-color: #FAFAFA;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  overflow-y: auto;
 `;
 
 const DashboardContent = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  padding: 0;
 `;
 
 const ProjectHealthSection = styled.div`
@@ -159,9 +163,8 @@ const DashboardPage = () => {
           <StatSubtext>+5% from last week</StatSubtext>
         </StatCard>
 
-        <ChartContainer>
-          <ChartTitle>Project Activity</ChartTitle>
-          <StatSubtext>Activity chart coming soon...</StatSubtext>
+        <ChartContainer style={{ gridColumn: '1 / -1' }}>
+          <ActivityFeed limit={15} />
         </ChartContainer>
       </DashboardContent>
     </DashboardContainer>

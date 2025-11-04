@@ -6,6 +6,10 @@ const userRoutes = require('./routes/userRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const commentRoutes = require('./routes/commentRoutes');
+const activityRoutes = require('./routes/activityRoutes');
+const messageRoutes = require('./routes/messages');
+const directMessageRoutes = require('./routes/directMessages');
 
 const app = express();
 
@@ -18,6 +22,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/activities', activityRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/direct-messages', directMessageRoutes);
 
 // Basic health check
 app.get('/', (req, res) => res.json({ message: 'Backend running' }));

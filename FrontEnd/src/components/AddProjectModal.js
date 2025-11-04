@@ -222,7 +222,7 @@ const Button = styled.button`
   cursor: pointer;
   transition: all 0.2s;
   
-  ${props => props.variant === 'primary' ? `
+  ${props => props.$variant === 'primary' ? `
     background-color: #000000;
     color: #FFFFFF;
     
@@ -465,7 +465,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
                 <Button type="button" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
+                <Button type="submit" $variant="primary">
                   Add Project
                 </Button>
               </ButtonGroup>
