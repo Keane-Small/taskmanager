@@ -247,6 +247,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     status: 'Planning',
+    priority: 'medium',
+    startDate: '',
     dueDate: '',
     collaborators: []
   });
@@ -324,7 +326,9 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
 
     const projectData = {
       name: formData.name,
+      priority: formData.priority,
       status: formData.status,
+      startDate: formData.startDate || null,
       dueDate: formData.dueDate || 'TBD',
       collaborators: formData.collaborators.map(c => ({
         userId: c.userId,
@@ -338,6 +342,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       status: 'Planning',
+      priority: 'medium',
+      startDate: '',
       dueDate: '',
       collaborators: []
     });
@@ -348,6 +354,8 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       status: 'Planning',
+      priority: 'medium',
+      startDate: '',
       dueDate: '',
       collaborators: []
     });
@@ -391,6 +399,19 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               </FormGroup>
               
               <FormGroup>
+                <FormLabel>Priority</FormLabel>
+                <Select
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleInputChange}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </Select>
+              </FormGroup>
+
+              <FormGroup>
                 <FormLabel>Status</FormLabel>
                 <Select
                   name="status"
@@ -403,6 +424,16 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
                 </Select>
               </FormGroup>
               
+              <FormGroup>
+                <FormLabel>Start Date</FormLabel>
+                <Input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                />
+              </FormGroup>
+
               <FormGroup>
                 <FormLabel>Due Date</FormLabel>
                 <Input

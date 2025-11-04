@@ -5,9 +5,15 @@ const taskSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   status: { 
     type: String, 
-    enum: ['todo', 'in-progress', 'completed'], 
-    default: 'todo' 
+    enum: ['backlog', 'todo', 'in-progress', 'completed', 'archived'], 
+    default: 'backlog' 
   },
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high'],
+    default: 'medium'
+  },
+  dueDate: { type: Date },
   assignedTo: [{ type: String }], // Array of initials like ['JD', 'SM']
   projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }

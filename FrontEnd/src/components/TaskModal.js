@@ -253,7 +253,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
   const [formData, setFormData] = useState({
     title: task?.title || '',
     description: task?.description || '',
-    status: task?.status || 'todo',
+    status: task?.status || 'backlog',
+    priority: task?.priority || 'medium',
+    dueDate: task?.dueDate || '',
     assignedTo: task?.assignedTo || []
   });
   
@@ -264,14 +266,18 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
       setFormData({
         title: task.title || '',
         description: task.description || '',
-        status: task.status || 'todo',
+        status: task.status || 'backlog',
+        priority: task.priority || 'medium',
+        dueDate: task.dueDate || '',
         assignedTo: Array.isArray(task.assignedTo) ? task.assignedTo : (task.assignedTo ? [task.assignedTo] : [])
       });
     } else {
       setFormData({
         title: '',
         description: '',
-        status: 'todo',
+        status: 'backlog',
+        priority: 'medium',
+        dueDate: '',
         assignedTo: []
       });
     }
@@ -325,7 +331,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
     setFormData({
       title: '',
       description: '',
-      status: 'todo',
+      status: 'backlog',
+      priority: 'medium',
+      dueDate: '',
       assignedTo: []
     });
     setNewAssignee('');
@@ -335,7 +343,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
     setFormData({
       title: '',
       description: '',
-      status: 'todo',
+      status: 'backlog',
+      priority: 'medium',
+      dueDate: '',
       assignedTo: []
     });
     setNewAssignee('');
@@ -395,16 +405,41 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
               </FormGroup>
               
               <FormGroup>
+                <FormLabel>Priority</FormLabel>
+                <Select
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleInputChange}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </Select>
+              </FormGroup>
+
+              <FormGroup>
                 <FormLabel>Status</FormLabel>
                 <Select
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
                 >
+                  <option value="backlog">Backlog</option>
                   <option value="todo">To Do</option>
                   <option value="in-progress">In Progress</option>
                   <option value="completed">Completed</option>
+                  <option value="archived">Archived</option>
                 </Select>
+              </FormGroup>
+
+              <FormGroup>
+                <FormLabel>Due Date</FormLabel>
+                <Input
+                  type="date"
+                  name="dueDate"
+                  value={formData.dueDate}
+                  onChange={handleInputChange}
+                />
               </FormGroup>
               
               <FormGroup>
