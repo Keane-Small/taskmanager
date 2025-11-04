@@ -1,6 +1,7 @@
 const Task = require('../models/Task');
 const Project = require('../models/Project');
 const { updateProjectCounts } = require('./projectController');
+const NotificationService = require('../services/notificationService');
 
 // Create a new task
 exports.createTask = async (req, res) => {
@@ -26,6 +27,19 @@ exports.createTask = async (req, res) => {
 
     // Update project task counts
     await updateProjectCounts(projectId);
+
+    // Notify assigned users
+    if (assignedTo && assignedTo.length > 0) {
+      for (const assigneeId of assignedTo) {
+        await NotificationService.notifyTaskAssigned(
+          task._id,
+          title,
+          assigneeId,
+          userId,
+          projectId
+        );
+      }
+    }
 
     res.status(201).json(task);
   } catch (err) {
@@ -83,6 +97,9 @@ exports.updateTask = async (req, res) => {
       return res.status(403).json({ message: 'Unauthorized' });
     }
 
+    const oldStatus = task.status;
+    const oldAssignedTo = task.assignedTo || [];
+
     const updates = {};
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
@@ -98,6 +115,37 @@ exports.updateTask = async (req, res) => {
     // Update project task counts if status changed
     if (status !== undefined) {
       await updateProjectCounts(task.projectId);
+      
+      // Notify project owner if task completed
+      if (status === 'completed' && oldStatus !== 'completed') {
+        const project = await Project.findById(task.projectId);
+        if (project) {
+          await NotificationService.notifyTaskCompleted(
+            task._id,
+            task.title,
+            req.userId,
+            project.userId,
+            task.projectId
+          );
+        }
+      }
+    }
+
+    // Notify newly assigned users
+    if (assignedTo !== undefined) {
+      const newAssignees = assignedTo.filter(
+        id => !oldAssignedTo.includes(id)
+      );
+      
+      for (const assigneeId of newAssignees) {
+        await NotificationService.notifyTaskAssigned(
+          task._id,
+          task.title,
+          assigneeId,
+          req.userId,
+          task.projectId
+        );
+      }
     }
 
     res.json(updatedTask);

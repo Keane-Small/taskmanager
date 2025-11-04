@@ -4,7 +4,9 @@ const Message = require('../models/Message');
 exports.getProjectMessages = async (req, res) => {
   const { projectId } = req.params;
   try {
-    const messages = await Message.find({ project: projectId }).sort({ timestamp: 1 });
+    const messages = await Message.find({ project: projectId })
+      .populate('sender', 'name email')
+      .sort({ timestamp: 1 });
     res.json(messages);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -17,6 +19,10 @@ exports.sendProjectMessage = async (req, res) => {
   try {
     const message = new Message({ sender, project, content });
     await message.save();
+    
+    // Populate sender info before returning
+    await message.populate('sender', 'name email');
+    
     res.status(201).json(message);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FiX, FiPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import CommentSection from './CommentSection';
 
 const ModalOverlay = styled(motion.div)`
   position: fixed;
@@ -21,9 +22,25 @@ const ModalContent = styled(motion.div)`
   border-radius: 16px;
   padding: 30px;
   width: 90%;
-  max-width: 500px;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   position: relative;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #F0F0F0;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #CCC;
+    border-radius: 4px;
+  }
 `;
 
 const ModalHeader = styled.div`
@@ -204,14 +221,14 @@ const Button = styled.button`
   cursor: pointer;
   transition: all 0.2s;
   
-  ${props => props.variant === 'primary' ? `
+  ${props => props.$variant === 'primary' ? `
     background-color: #000000;
     color: #FFFFFF;
     
     &:hover {
       background-color: #333333;
     }
-  ` : props.variant === 'danger' ? `
+  ` : props.$variant === 'danger' ? `
     background-color: #FF4444;
     color: #FFFFFF;
     
@@ -236,7 +253,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
   const [formData, setFormData] = useState({
     title: task?.title || '',
     description: task?.description || '',
-    status: task?.status || 'todo',
+    status: task?.status || 'backlog',
+    priority: task?.priority || 'medium',
+    dueDate: task?.dueDate || '',
     assignedTo: task?.assignedTo || []
   });
   
@@ -247,14 +266,18 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
       setFormData({
         title: task.title || '',
         description: task.description || '',
-        status: task.status || 'todo',
+        status: task.status || 'backlog',
+        priority: task.priority || 'medium',
+        dueDate: task.dueDate || '',
         assignedTo: Array.isArray(task.assignedTo) ? task.assignedTo : (task.assignedTo ? [task.assignedTo] : [])
       });
     } else {
       setFormData({
         title: '',
         description: '',
-        status: 'todo',
+        status: 'backlog',
+        priority: 'medium',
+        dueDate: '',
         assignedTo: []
       });
     }
@@ -308,7 +331,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
     setFormData({
       title: '',
       description: '',
-      status: 'todo',
+      status: 'backlog',
+      priority: 'medium',
+      dueDate: '',
       assignedTo: []
     });
     setNewAssignee('');
@@ -318,7 +343,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
     setFormData({
       title: '',
       description: '',
-      status: 'todo',
+      status: 'backlog',
+      priority: 'medium',
+      dueDate: '',
       assignedTo: []
     });
     setNewAssignee('');
@@ -378,16 +405,41 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
               </FormGroup>
               
               <FormGroup>
+                <FormLabel>Priority</FormLabel>
+                <Select
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleInputChange}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </Select>
+              </FormGroup>
+
+              <FormGroup>
                 <FormLabel>Status</FormLabel>
                 <Select
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
                 >
+                  <option value="backlog">Backlog</option>
                   <option value="todo">To Do</option>
                   <option value="in-progress">In Progress</option>
                   <option value="completed">Completed</option>
+                  <option value="archived">Archived</option>
                 </Select>
+              </FormGroup>
+
+              <FormGroup>
+                <FormLabel>Due Date</FormLabel>
+                <Input
+                  type="date"
+                  name="dueDate"
+                  value={formData.dueDate}
+                  onChange={handleInputChange}
+                />
               </FormGroup>
               
               <FormGroup>
@@ -425,18 +477,22 @@ const TaskModal = ({ isOpen, onClose, onSubmit, onDelete, task, projectId }) => 
               
               <ButtonGroup>
                 {task && (
-                  <Button type="button" variant="danger" onClick={handleDelete}>
+                  <Button type="button" $variant="danger" onClick={handleDelete}>
                     Delete
                   </Button>
                 )}
                 <Button type="button" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
+                <Button type="submit" $variant="primary">
                   {task ? 'Save Changes' : 'Add Task'}
                 </Button>
               </ButtonGroup>
             </form>
+            
+            {task && task._id && (
+              <CommentSection taskId={task._id} />
+            )}
           </ModalContent>
         </ModalOverlay>
       )}

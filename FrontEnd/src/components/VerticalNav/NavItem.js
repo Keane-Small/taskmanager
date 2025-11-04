@@ -8,7 +8,7 @@ const ActiveBackground = styled(motion.div)`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #000000;
+  background: linear-gradient(135deg, #235347 0%, #163832 100%);
   border-radius: 12px;
   z-index: 0;
 `;
@@ -20,7 +20,7 @@ const IconWrapper = styled(motion.div)`
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  color: ${props => props.$isActive ? '#FFFFFF' : '#6B7280'};
+  color: ${props => props.$isActive ? '#FFFFFF' : '#163832'};
   transition: color 0.3s ease-in-out;
 `;
 
@@ -39,15 +39,15 @@ const ItemContainer = styled(motion.button)`
   border-radius: 12px;
   
   &:hover {
-    background-color: ${props => props.$isActive ? 'transparent' : 'rgba(0, 0, 0, 0.03)'};
+    background-color: ${props => props.$isActive ? 'transparent' : 'rgba(142, 182, 155, 0.2)'};
   }
   
   &:hover ${IconWrapper} {
-    color: ${props => props.$isActive ? '#FFFFFF' : '#000000'};
+    color: ${props => props.$isActive ? '#FFFFFF' : '#0B2B26'};
   }
   
   &:focus {
-    outline: 2px solid #000000;
+    outline: 2px solid #235347;
     outline-offset: 2px;
   }
 `;

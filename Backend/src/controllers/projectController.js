@@ -1,5 +1,7 @@
 const Project = require('../models/Project');
 const Task = require('../models/Task');
+const Message = require('../models/Message');
+const NotificationService = require('../services/notificationService');
 
 // Create a new project
 exports.createProject = async (req, res) => {
@@ -15,6 +17,33 @@ exports.createProject = async (req, res) => {
       color: color || '#F9F9F9',
       userId
     });
+
+    // Create a welcome message in the project group chat
+    if (collaborators && collaborators.length > 0) {
+      const collaboratorNames = collaborators.length === 1 
+        ? '1 collaborator' 
+        : `${collaborators.length} collaborators`;
+      
+      await Message.create({
+        sender: userId,
+        project: project._id,
+        content: `🎉 Project "${name}" has been created with ${collaboratorNames}. Welcome to the team!`
+      });
+
+      // Send notifications to all collaborators
+      await NotificationService.notifyProjectCreated(
+        project._id,
+        name,
+        userId,
+        collaborators
+      );
+    } else {
+      await Message.create({
+        sender: userId,
+        project: project._id,
+        content: `🎉 Project "${name}" has been created. You can add collaborators and start collaborating!`
+      });
+    }
 
     res.status(201).json(project);
   } catch (err) {
@@ -165,6 +194,26 @@ exports.addCollaborator = async (req, res) => {
     
     // Populate the collaborators before sending response
     await project.populate('collaborators.userId', 'name email');
+    
+    // Send a notification message to the project group chat
+    const User = require('../models/User');
+    const newCollaborator = await User.findById(userId);
+    if (newCollaborator) {
+      await Message.create({
+        sender: req.userId,
+        project: projectId,
+        content: `👋 ${newCollaborator.name} has joined the project as ${role || 'Editor'}!`
+      });
+
+      // Send notification to the new collaborator
+      await NotificationService.notifyCollaboratorAdded(
+        projectId,
+        project.name,
+        req.userId,
+        userId,
+        role || 'Editor'
+      );
+    }
     
     res.json(project);
   } catch (err) {

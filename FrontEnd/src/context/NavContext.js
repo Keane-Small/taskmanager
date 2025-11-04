@@ -11,7 +11,7 @@ export const useNav = () => {
 };
 
 export const NavProvider = ({ children }) => {
-  const [activeNavItemId, setActiveNavItemId] = useState('projects');
+  const [activeNavItemId, setActiveNavItemId] = useState('home');
 
   return (
     <NavContext.Provider value={{ activeNavItemId, setActiveNavItemId }}>

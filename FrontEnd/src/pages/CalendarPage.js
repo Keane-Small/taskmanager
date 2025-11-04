@@ -8,10 +8,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const ContentBox = styled.div`
   position: fixed;
-  left: 95px;
-  top: 10px;
-  right: 15px;
-  bottom: 10px;
+  left: 100px;
+  top: 95px;
+  right: 20px;
+  bottom: 15px;
   background-color: #FAFAFA;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -58,7 +58,7 @@ const NavButton = styled.button`
 const MonthYear = styled.h1`
   font-size: 28px;
   font-weight: 600;
-  color: #000000;
+  color: #0B2B26;
   margin: 0;
   min-width: 200px;
   text-align: center;
@@ -73,15 +73,15 @@ const ViewButton = styled.button`
   padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  background-color: ${props => props.$active ? '#000000' : '#FFFFFF'};
-  color: ${props => props.$active ? '#FFFFFF' : '#666666'};
+  background-color: ${props => props.$active ? '#235347' : '#FFFFFF'};
+  color: ${props => props.$active ? '#FFFFFF' : '#163832'};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   
   &:hover {
-    background-color: ${props => props.$active ? '#000000' : '#F0F0F0'};
+    background-color: ${props => props.$active ? '#163832' : 'rgba(142, 182, 155, 0.2)'};
   }
 `;
 
@@ -180,7 +180,7 @@ const DayName = styled.div`
 const DayNumber = styled.div`
   font-size: 20px;
   font-weight: 600;
-  color: ${props => props.$isToday ? '#FFFFFF' : '#000000'};
+  color: ${props => props.$isToday ? '#FFFFFF' : '#0B2B26'};
   width: 36px;
   height: 36px;
   display: flex;
@@ -188,7 +188,7 @@ const DayNumber = styled.div`
   justify-content: center;
   margin: 0 auto;
   border-radius: 50%;
-  background-color: ${props => props.$isToday ? '#000000' : 'transparent'};
+  background-color: ${props => props.$isToday ? '#235347' : 'transparent'};
 `;
 
 const CalendarBody = styled.div`
@@ -675,67 +675,17 @@ const CalendarPage = () => {
       </CalendarHeader>
 
       {projects.length === 0 ? (
-        <CalendarGrid>
-          {view === 'month' ? (
-            <>
-              <WeekHeader $view={view}>
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <DayHeader key={day}>
-                    <DayName>{day}</DayName>
-                  </DayHeader>
-                ))}
-              </WeekHeader>
-              <MonthGrid>
-                {days.map((day, index) => (
-                  <MonthDay key={index} $isCurrentMonth={day.isCurrentMonth}>
-                    <MonthDayNumber $isToday={day.isToday}>
-                      {day.number}
-                    </MonthDayNumber>
-                  </MonthDay>
-                ))}
-              </MonthGrid>
-            </>
-          ) : (
-            <>
-              <WeekHeader $view={view}>
-                {view !== 'month' && <TimeLabel>Time</TimeLabel>}
-                {days.map((day, index) => (
-                  <DayHeader key={index}>
-                    <DayName>{day.name}</DayName>
-                    <DayNumber $isToday={day.isToday}>{day.number}</DayNumber>
-                  </DayHeader>
-                ))}
-              </WeekHeader>
-              <CalendarBody $view={view}>
-                {timeSlots.map((time, timeIndex) => (
-                  <React.Fragment key={timeIndex}>
-                    {view !== 'month' && <TimeSlot>{time}</TimeSlot>}
-                    {days.map((day, dayIndex) => (
-                      <DayColumn key={dayIndex}>
-                        {/* Empty day column */}
-                      </DayColumn>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </CalendarBody>
-            </>
-          )}
-          <div style={{ 
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center',
-            color: '#666',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            padding: '20px',
-            borderRadius: '8px',
-            pointerEvents: 'none'
-          }}>
-            <h3>No Projects Yet</h3>
-            <p>Create projects with due dates to see them in your calendar</p>
-          </div>
-        </CalendarGrid>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          height: '60%',
+          gap: '20px'
+        }}>
+          <h2 style={{ color: '#163832' }}>No Projects Yet</h2>
+          <p style={{ color: '#8EB69B' }}>Create projects with due dates to see them in your calendar</p>
+        </div>
       ) : (
         <CalendarGrid>
           {view === 'month' ? (
