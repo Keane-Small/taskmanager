@@ -427,7 +427,8 @@ const TaskBoard = ({ project, onClose }) => {
             <div>
               <ProjectTitle>{project.name}</ProjectTitle>
               <ProjectMeta>
-                <MetaItem>Due: {project.dueDate}</MetaItem>
+                <MetaItem>Start: {project.startDate}</MetaItem>
+                <MetaItem>Due: {project.endDate}</MetaItem>
                 <MetaItem>Status: {project.status}</MetaItem>
                 <MetaItem>Tasks: {tasks.length}</MetaItem>
               </ProjectMeta>

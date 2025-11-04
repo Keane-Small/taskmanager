@@ -6,6 +6,9 @@ const auth = require('../middleware/auth');
 // Public
 router.post('/register', controller.createUser);
 router.post('/login', controller.login);
+router.post('/forgot-password', controller.forgotPassword);
+router.post('/reset-password/:token', controller.resetPassword);
+router.get('/verify-reset-token/:token', controller.verifyResetToken);
 
 // Protected
 router.get('/', auth, controller.getUsers);

@@ -53,7 +53,7 @@
   gap: 0.5rem;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e40af;
+  color: #2D5A3D;
   text-decoration: none;
   margin-bottom: 1.5rem;
 }
@@ -118,8 +118,8 @@
 }
 
 .input-wrapper input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+  border-color: #2D5A3D;
+  box-shadow: 0 0 0 4px rgba(45, 90, 61, 0.1);
   background: white;
 }
 
@@ -138,7 +138,7 @@
 }
 
 .toggle-password:hover {
-  color: #1e40af;
+  color: #2D5A3D;
 }
 
 .toggle-password svg {
@@ -174,7 +174,7 @@
 }
 
 .forgot-link {
-  color: #1e40af;
+  color: #2D5A3D;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -182,13 +182,13 @@
 }
 
 .forgot-link:hover {
-  color: #1e3a8a;
+  color: #1F3E2A;
 }
 
 .btn-submit {
   width: 100%;
   padding: 1rem;
-  background: #007bff;
+  background: #2D5A3D;
   color: white;
   border: none;
   border-radius: 12px;
@@ -202,9 +202,9 @@
 }
 
 .btn-submit:hover {
-  background: #0056b3;
+  background: #1F3E2A;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.2);
 }
 
 .btn-submit:active {
@@ -239,7 +239,7 @@
 }
 
 .terms-text a {
-  color: #1e40af;
+  color: #2D5A3D;
   text-decoration: none;
   font-weight: 600;
 }
@@ -278,14 +278,14 @@
 }
 
 .auth-switch a {
-  color: #1e40af;
+  color: #2D5A3D;
   text-decoration: none;
   font-weight: 700;
   transition: color 0.3s;
 }
 
 .auth-switch a:hover {
-  color: #1e3a8a;
+  color: #1F3E2A;
   text-decoration: underline;
 }
 
@@ -303,7 +303,7 @@
 }
 
 .back-home a:hover {
-  color: #1e40af;
+  color: #2D5A3D;
 }
 
 /* Responsive */

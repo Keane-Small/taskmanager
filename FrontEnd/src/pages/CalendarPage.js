@@ -90,13 +90,70 @@ const CalendarGrid = styled.div`
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  position: relative;
 `;
 
 const WeekHeader = styled.div`
   display: grid;
-  grid-template-columns: 80px repeat(5, 1fr);
+  grid-template-columns: ${props => 
+    props.$view === 'day' ? '80px 1fr' :
+    props.$view === 'week' ? '80px repeat(7, 1fr)' :
+    'repeat(7, 1fr)'
+  };
   border-bottom: 2px solid #F0F0F0;
   background-color: #FAFAFA;
+`;
+
+const MonthGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: #F0F0F0;
+`;
+
+const MonthDay = styled.div`
+  background-color: #FFFFFF;
+  min-height: 120px;
+  padding: 12px 8px;
+  border: 1px solid #F0F0F0;
+  position: relative;
+  opacity: ${props => props.$isCurrentMonth ? 1 : 0.5};
+  
+  &:hover {
+    background-color: #FAFAFA;
+  }
+`;
+
+const MonthDayNumber = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${props => props.$isToday ? '#FFFFFF' : '#000000'};
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: ${props => props.$isToday ? '#000000' : 'transparent'};
+  margin-bottom: 8px;
+`;
+
+const MonthEvent = styled.div`
+  background-color: ${props => props.$color};
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-bottom: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const TimeLabel = styled.div`
@@ -136,7 +193,11 @@ const DayNumber = styled.div`
 
 const CalendarBody = styled.div`
   display: grid;
-  grid-template-columns: 80px repeat(5, 1fr);
+  grid-template-columns: ${props => 
+    props.$view === 'day' ? '80px 1fr' :
+    props.$view === 'week' ? '80px repeat(7, 1fr)' :
+    'repeat(7, 1fr)'
+  };
 `;
 
 const TimeSlot = styled.div`
@@ -367,71 +428,121 @@ const CalendarPage = () => {
     }
   };
 
-  // Generate days for current week based on currentDate
-  const getWeekDays = () => {
+  // Generate days based on current view
+  const getViewDays = () => {
     const today = new Date();
-    const currentDay = currentDate.getDay();
-    const monday = new Date(currentDate);
-    monday.setDate(currentDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1));
+    
+    if (view === 'day') {
+      return [{
+        name: currentDate.toLocaleDateString('en-US', { weekday: 'short' }),
+        number: currentDate.getDate(),
+        fullDate: new Date(currentDate),
+        isToday: currentDate.toDateString() === today.toDateString()
+      }];
+    } else if (view === 'week') {
+      const currentDay = currentDate.getDay();
+      const monday = new Date(currentDate);
+      monday.setDate(currentDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1));
 
-    const days = [];
-    for (let i = 0; i < 5; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
-      days.push({
-        name: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        number: date.getDate(),
-        fullDate: date,
-        isToday: date.toDateString() === today.toDateString()
-      });
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + i);
+        days.push({
+          name: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          number: date.getDate(),
+          fullDate: date,
+          isToday: date.toDateString() === today.toDateString()
+        });
+      }
+      return days;
+    } else { // month view
+      const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      const startDate = new Date(firstDay);
+      const endDate = new Date(lastDay);
+      
+      // Start from the beginning of the week
+      startDate.setDate(firstDay.getDate() - firstDay.getDay());
+      // End at the end of the week
+      endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+      
+      const days = [];
+      const current = new Date(startDate);
+      
+      while (current <= endDate) {
+        days.push({
+          name: current.toLocaleDateString('en-US', { weekday: 'short' }),
+          number: current.getDate(),
+          fullDate: new Date(current),
+          isToday: current.toDateString() === today.toDateString(),
+          isCurrentMonth: current.getMonth() === currentDate.getMonth()
+        });
+        current.setDate(current.getDate() + 1);
+      }
+      return days;
     }
-    return days;
   };
 
-  const days = getWeekDays();
+  const days = getViewDays();
   const timeSlots = ['9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00'];
 
-  // Convert projects to calendar events based on due dates
+  // Convert projects to calendar events based on due dates and tasks
   const getEventsForDay = (date) => {
-    const events = projects
-      .filter(project => {
-        if (!project.dueDate || project.dueDate === 'TBD') {
-          console.log('Calendar: Skipping project (no due date):', project.name, project.dueDate);
-          return false;
-        }
-        
-        // Try to parse the date
-        const projectDate = new Date(project.dueDate);
-        const dateMatch = projectDate.toDateString() === date.toDateString();
-        
-        console.log('Calendar: Checking project:', project.name, {
-          dueDate: project.dueDate,
-          projectDate: projectDate.toDateString(),
-          checkDate: date.toDateString(),
-          matches: dateMatch
-        });
-        
-        return dateMatch;
-      })
-      .map(project => {
-        // Extract collaborator initials
-        const participants = project.collaborators?.slice(0, 3).map(collab => {
-          if (typeof collab === 'string') return collab;
-          const name = collab.userId?.name || collab.userId?.email || 'U';
-          return name.substring(0, 2).toUpperCase();
-        }) || [];
+    const events = [];
+    
+    // Add projects based on due dates
+    projects.forEach(project => {
+      if (project.endDate && project.endDate !== 'TBD') {
+        const projectDate = new Date(project.endDate);
+        if (projectDate.toDateString() === date.toDateString()) {
+          const participants = project.collaborators?.slice(0, 3).map(collab => {
+            if (typeof collab === 'string') return collab;
+            const name = collab.userId?.name || collab.userId?.email || 'U';
+            return name.substring(0, 2).toUpperCase();
+          }) || [];
 
-        return {
-          time: '9:00', // Default time - show all projects at 9am
-          title: project.name,
-          color: project.color || '#FFE5B4',
-          participants,
-          status: project.status,
-          progress: project.totalTasks > 0 
-            ? Math.round((project.completedTasks / project.totalTasks) * 100) 
-            : 0
-        };
-      });
+          events.push({
+            time: '9:00',
+            title: project.name,
+            color: project.color || '#FFE5B4',
+            participants,
+            status: project.status,
+            progress: project.totalTasks > 0 
+              ? Math.round((project.completedTasks / project.totalTasks) * 100) 
+              : 0,
+            type: 'project'
+          });
+        }
+      }
+    });
+
+    // Add tasks with specific dates
+    projects.forEach(project => {
+      if (project.tasks) {
+        project.tasks.forEach(task => {
+          if (task.startDate || task.endDate) {
+            const taskStartDate = task.startDate ? new Date(task.startDate) : null;
+            const taskEndDate = task.endDate ? new Date(task.endDate) : null;
+            
+            // Show task if it starts or ends on this date
+            if ((taskStartDate && taskStartDate.toDateString() === date.toDateString()) ||
+                (taskEndDate && taskEndDate.toDateString() === date.toDateString())) {
+              
+              events.push({
+                time: '10:00', // Show tasks at 10am
+                title: `${task.title} (${project.name})`,
+                color: project.color || '#E8F4FD',
+                participants: [],
+                status: task.status || 'pending',
+                progress: task.status === 'completed' ? 100 : 0,
+                type: 'task'
+              });
+            }
+          }
+        });
+      }
+    });
     
     return events;
   };
@@ -533,9 +644,33 @@ const CalendarPage = () => {
           </ViewButton>
         </MonthYearSection>
         <ViewSelector>
-          <ViewButton $active={view === 'day'} onClick={() => setView('day')}>Day</ViewButton>
-          <ViewButton $active={view === 'week'} onClick={() => setView('week')}>Week</ViewButton>
-          <ViewButton $active={view === 'month'} onClick={() => setView('month')}>Month</ViewButton>
+          <ViewButton 
+            $active={view === 'day'} 
+            onClick={() => {
+              console.log('Switching to day view');
+              setView('day');
+            }}
+          >
+            Day
+          </ViewButton>
+          <ViewButton 
+            $active={view === 'week'} 
+            onClick={() => {
+              console.log('Switching to week view');
+              setView('week');
+            }}
+          >
+            Week
+          </ViewButton>
+          <ViewButton 
+            $active={view === 'month'} 
+            onClick={() => {
+              console.log('Switching to month view');
+              setView('month');
+            }}
+          >
+            Month
+          </ViewButton>
         </ViewSelector>
       </CalendarHeader>
 
@@ -553,52 +688,91 @@ const CalendarPage = () => {
         </div>
       ) : (
         <CalendarGrid>
-          <WeekHeader>
-            <TimeLabel>Time</TimeLabel>
-            {days.map((day, index) => (
-              <DayHeader key={index}>
-                <DayName>{day.name}</DayName>
-                <DayNumber $isToday={day.isToday}>{day.number}</DayNumber>
-              </DayHeader>
-            ))}
-          </WeekHeader>
-
-          <CalendarBody>
-            {timeSlots.map((time, timeIndex) => (
-              <React.Fragment key={timeIndex}>
-                <TimeSlot>{time}</TimeSlot>
-                {days.map((day, dayIndex) => {
+          {view === 'month' ? (
+            <>
+              <WeekHeader $view={view}>
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <DayHeader key={day}>
+                    <DayName>{day}</DayName>
+                  </DayHeader>
+                ))}
+              </WeekHeader>
+              <MonthGrid>
+                {days.map((day, index) => {
                   const dayEvents = getEventsForDay(day.fullDate);
-                  const timeEvents = dayEvents.filter(event => event.time === time);
-                  
                   return (
-                    <DayColumn key={dayIndex}>
-                      {timeEvents.map((event, eventIndex) => {
+                    <MonthDay key={index} $isCurrentMonth={day.isCurrentMonth}>
+                      <MonthDayNumber $isToday={day.isToday}>
+                        {day.number}
+                      </MonthDayNumber>
+                      {dayEvents.map((event, eventIndex) => {
                         const project = projects.find(p => p.name === event.title);
                         return (
-                          <Event 
+                          <MonthEvent 
                             key={eventIndex} 
                             $color={event.color}
                             onClick={() => project && handleEventClick(project)}
+                            title={`${event.title} - ${event.progress}% complete`}
                           >
-                            <EventTitle>{event.title}</EventTitle>
-                            <EventTime>
-                              {event.status} • {event.progress}% complete
-                            </EventTime>
-                            <EventParticipants>
-                              {event.participants.map((participant, pIndex) => (
-                                <ParticipantAvatar key={pIndex}>{participant}</ParticipantAvatar>
-                              ))}
-                            </EventParticipants>
-                          </Event>
+                            {event.title}
+                          </MonthEvent>
                         );
                       })}
-                    </DayColumn>
+                    </MonthDay>
                   );
                 })}
-              </React.Fragment>
-            ))}
-          </CalendarBody>
+              </MonthGrid>
+            </>
+          ) : (
+            <>
+              <WeekHeader $view={view}>
+                {view !== 'month' && <TimeLabel>Time</TimeLabel>}
+                {days.map((day, index) => (
+                  <DayHeader key={index}>
+                    <DayName>{day.name}</DayName>
+                    <DayNumber $isToday={day.isToday}>{day.number}</DayNumber>
+                  </DayHeader>
+                ))}
+              </WeekHeader>
+
+              <CalendarBody $view={view}>
+                {timeSlots.map((time, timeIndex) => (
+                  <React.Fragment key={timeIndex}>
+                    {view !== 'month' && <TimeSlot>{time}</TimeSlot>}
+                    {days.map((day, dayIndex) => {
+                      const dayEvents = getEventsForDay(day.fullDate);
+                      const timeEvents = dayEvents.filter(event => event.time === time);
+                      
+                      return (
+                        <DayColumn key={dayIndex}>
+                          {timeEvents.map((event, eventIndex) => {
+                            const project = projects.find(p => p.name === event.title);
+                            return (
+                              <Event 
+                                key={eventIndex} 
+                                $color={event.color}
+                                onClick={() => project && handleEventClick(project)}
+                              >
+                                <EventTitle>{event.title}</EventTitle>
+                                <EventTime>
+                                  {event.status} • {event.progress}% complete
+                                </EventTime>
+                                <EventParticipants>
+                                  {event.participants.map((participant, pIndex) => (
+                                    <ParticipantAvatar key={pIndex}>{participant}</ParticipantAvatar>
+                                  ))}
+                                </EventParticipants>
+                              </Event>
+                            );
+                          })}
+                        </DayColumn>
+                      );
+                    })}
+                  </React.Fragment>
+                ))}
+              </CalendarBody>
+            </>
+          )}
         </CalendarGrid>
       )}
 
@@ -620,8 +794,8 @@ const CalendarPage = () => {
             <ModalSection>
               <ModalLabel>Due Date</ModalLabel>
               <ModalValue>
-                {selectedProject.dueDate 
-                  ? new Date(selectedProject.dueDate).toLocaleDateString('en-US', { 
+                {selectedProject.endDate 
+                  ? new Date(selectedProject.endDate).toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
                       month: 'long', 

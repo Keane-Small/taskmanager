@@ -25,4 +25,13 @@ const projectSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
+// Virtual field to maintain backward compatibility - dueDate is the endDate
+projectSchema.virtual('dueDate').get(function() {
+  return this.endDate;
+});
+
+// Ensure virtual fields are serialized
+projectSchema.set('toJSON', { virtuals: true });
+projectSchema.set('toObject', { virtuals: true });
+
 module.exports = mongoose.model('Project', projectSchema);

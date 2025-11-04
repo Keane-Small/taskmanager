@@ -438,8 +438,18 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
                 <FormLabel>Due Date</FormLabel>
                 <Input
                   type="date"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <FormLabel>End Date (Due Date)</FormLabel>
+                <Input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
                   onChange={handleInputChange}
                 />
               </FormGroup>
