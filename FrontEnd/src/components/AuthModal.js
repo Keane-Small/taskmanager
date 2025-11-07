@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiCheckCircle, FiMail, FiLock, FiEye, FiEyeOff, FiX, FiUser, FiCheck } from 'react-icons/fi';
+import { FiCheckCircle, FiMail, FiLock, FiEye, FiEyeOff, FiX, FiUser } from 'react-icons/fi';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 

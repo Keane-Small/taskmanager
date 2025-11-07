@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiSend, FiTrash2, FiEdit2, FiMoreVertical } from 'react-icons/fi';
+import { FiSend, FiTrash2, FiEdit2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 

@@ -7,11 +7,9 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import MainApp from './pages/MainApp';
 import ResetPassword from './components/ResetPassword';
-import ForgotPassword from './pages/ForgotPassword';
 import ForgotPasswordOTP from './pages/ForgotPasswordOTP';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import './utils/testEmailJS'; // Load EmailJS test for debugging
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -68,7 +66,6 @@ function App() {
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-            <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
             <Route path="/forgot-password-otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />

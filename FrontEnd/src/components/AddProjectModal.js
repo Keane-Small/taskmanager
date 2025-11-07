@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiX, FiPlus, FiSearch } from 'react-icons/fi';
+import { FiX, FiSearch } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';

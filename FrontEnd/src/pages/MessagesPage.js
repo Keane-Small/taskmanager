@@ -578,7 +578,7 @@ const MessagesPage = () => {
       const response = await fetch(`${API_URL}/direct-messages/unread/${currentUserId}`);
       
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         // The backend returns total count, but we need per-user counts
         // Let's fetch messages for each user to count unread
         const token = localStorage.getItem("token");

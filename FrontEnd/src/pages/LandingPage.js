@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./LandingPage.css";
 import {
   FiCheckCircle,
@@ -12,7 +12,6 @@ import {
 import AuthModal from "../components/AuthModal";
 
 const LandingPage = () => {
-  const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
 

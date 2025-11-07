@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { FiX, FiSend, FiMessageCircle } from "react-icons/fi";
+import { FiX, FiSend } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ChatContainer = styled(motion.div)`

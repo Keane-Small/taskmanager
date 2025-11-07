@@ -448,8 +448,6 @@ const SettingsPage = () => {
     navigate("/");
   };
 
-  console.log("SettingsPage rendering with user:", user);
-
   return (
     <ContentBox>
       <Heading>Settings</Heading>

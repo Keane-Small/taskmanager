@@ -1,15 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { FiMessageCircle, FiBell, FiCalendar, FiSettings, FiFolder, FiUser } from 'react-icons/fi';
+
+import { FiMessageCircle, FiCalendar, FiSettings, FiFolder } from 'react-icons/fi';
 import { MdDashboard } from 'react-icons/md';
-import UserAvatar from './UserAvatar';
 import NavItem from './NavItem';
 
 import { useNav } from '../../context/NavContext';
 import { useMessages } from '../../context/MessageContext';
-import { useAuth } from '../../context/AuthContext';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
@@ -32,12 +30,7 @@ const NavContainer = styled(motion.nav)`
   }
 `;
 
-const TopSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-`;
+
 
 const MiddleSection = styled.div`
   flex: 1;
@@ -68,8 +61,6 @@ const BottomSection = styled.div`
 const VerticalNavBar = () => {
   const { activeNavItemId, setActiveNavItemId } = useNav();
   const { unreadCount } = useMessages();
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   const navItems = [
     { id: 'home', icon: MdDashboard, label: 'Dashboard', notificationCount: 0 },
@@ -82,13 +73,7 @@ const VerticalNavBar = () => {
     setActiveNavItemId(itemId);
   };
 
-  const handleAddClick = () => {
-    setActiveNavItemId('projects');
-  };
 
-  const handleAvatarClick = () => {
-    console.log('Avatar clicked');
-  };
 
   const handleSettingsClick = () => {
     setActiveNavItemId('settings');

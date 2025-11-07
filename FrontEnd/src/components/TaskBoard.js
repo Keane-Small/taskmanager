@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiX, FiArrowLeft, FiPlus } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { FiArrowLeft, FiPlus } from 'react-icons/fi';
 import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import TaskCard from './TaskCard';
@@ -190,7 +189,6 @@ const TaskBoard = ({ project, onClose }) => {
   const [completingTaskId, setCompletingTaskId] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchTasks();
@@ -217,8 +215,6 @@ const TaskBoard = ({ project, onClose }) => {
     } catch (error) {
       console.error('Error fetching tasks:', error);
       setTasks([]);
-    } finally {
-      setLoading(false);
     }
   };
 

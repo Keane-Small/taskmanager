@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { FiBell, FiCheck, FiCheckCircle, FiX, FiTrash2 } from 'react-icons/fi';
+import { FiBell, FiCheck, FiCheckCircle, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
