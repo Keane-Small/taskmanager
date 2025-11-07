@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FiUser, FiMail, FiLock, FiSave, FiCamera, FiLogOut } from "react-icons/fi";
 
@@ -216,6 +217,7 @@ const SignOutDescription = styled.p`
 
 const SettingsPage = () => {
   const { user, updateUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [profileImage, setProfileImage] = useState(
@@ -442,10 +444,8 @@ const SettingsPage = () => {
     // Call logout from AuthContext
     logout();
     
-    // Optional: Show a brief success message before redirect
-    setMessage({ text: "Signed out successfully!", type: "success" });
-    
-    // The app will automatically redirect to login due to authentication state change
+    // Navigate directly to home page
+    navigate("/");
   };
 
   console.log("SettingsPage rendering with user:", user);
