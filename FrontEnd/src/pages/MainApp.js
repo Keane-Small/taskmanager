@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import VerticalNavBar from '../components/VerticalNav/VerticalNavBar';
 import { NavProvider, useNav } from '../context/NavContext';
 import { useAuth } from '../context/AuthContext';
@@ -13,11 +14,44 @@ import SproutQuickCapture from '../components/SproutQuickCapture';
 import NotificationCenter from '../components/NotificationCenter';
 import './MainApp.css';
 
+const UserProfileImage = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #235347;
+`;
+
+const UserProfileInitials = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  border: 2px solid #235347;
+`;
+
 const AppContent = () => {
   const { activeNavItemId } = useNav();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [projects, setProjects] = React.useState([]);
+
+  // Helper function to get user initials
+  const getUserInitials = (name) => {
+    if (!name) return "??";
+    const nameParts = name.trim().split(" ");
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0);
+    }
+    return nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0);
+  };
 
   // Fetch projects for Sprout
   const fetchProjects = React.useCallback(async () => {
@@ -182,17 +216,11 @@ const AppContent = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <NotificationCenter />
             <div className="user-profile">
-            <img 
-              src={user?.profilePicture || "https://i.pravatar.cc/150?img=12"} 
-              alt="Profile"
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: '2px solid #235347'
-              }}
-            />
+              {user?.profilePicture ? (
+                <UserProfileImage src={user.profilePicture} alt="Profile" />
+              ) : (
+                <UserProfileInitials>{getUserInitials(user?.name)}</UserProfileInitials>
+              )}
             </div>
           </div>
         </div>

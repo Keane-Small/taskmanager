@@ -17,6 +17,20 @@ const AvatarImage = styled.img`
   object-fit: cover;
 `;
 
+const AvatarInitials = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+`;
+
 const StatusBadge = styled.div`
   position: absolute;
   bottom: 2px;
@@ -28,7 +42,17 @@ const StatusBadge = styled.div`
   border: 2px solid #FFFDD0;
 `;
 
-const UserAvatar = ({ src, isOnline = true, onClick }) => {
+const UserAvatar = ({ src, name, isOnline = true, onClick }) => {
+  // Helper function to get user initials
+  const getUserInitials = (userName) => {
+    if (!userName) return "??";
+    const nameParts = userName.trim().split(" ");
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0);
+    }
+    return nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0);
+  };
+
   return (
     <AvatarContainer
       onClick={onClick}
@@ -38,7 +62,11 @@ const UserAvatar = ({ src, isOnline = true, onClick }) => {
       role="button"
       aria-label="User profile"
     >
-      <AvatarImage src={src} alt="User avatar" />
+      {src ? (
+        <AvatarImage src={src} alt="User avatar" />
+      ) : (
+        <AvatarInitials>{getUserInitials(name)}</AvatarInitials>
+      )}
       <StatusBadge $isOnline={isOnline} />
     </AvatarContainer>
   );

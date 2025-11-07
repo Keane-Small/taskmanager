@@ -154,6 +154,19 @@ const ProfileImage = styled.img`
   object-fit: cover;
 `;
 
+const ProfileInitials = styled.div`
+  width: 100%;
+  height: 100%;
+  background: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+`;
+
 const UploadOverlay = styled.label`
   position: absolute;
   top: 0;
@@ -220,10 +233,18 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
-  const [profileImage, setProfileImage] = useState(
-    user?.profilePicture || "https://i.pravatar.cc/150?img=12"
-  );
+  const [profileImage, setProfileImage] = useState(user?.profilePicture || null);
   const [imageFile, setImageFile] = useState(null);
+
+  // Helper function to get user initials
+  const getUserInitials = (name) => {
+    if (!name) return "??";
+    const nameParts = name.trim().split(" ");
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0);
+    }
+    return nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0);
+  };
 
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
@@ -316,6 +337,7 @@ const SettingsPage = () => {
           type: "success",
         });
         setImageFile(null);
+        setProfileImage(updatedUserData.profilePicture);
 
         // Update user context - this will update the avatar in the sidebar
         updateUser(updatedUserData);
@@ -462,7 +484,11 @@ const SettingsPage = () => {
           </SectionTitle>
           <ProfileImageSection>
             <ProfileImageContainer>
-              <ProfileImage src={profileImage} alt="Profile" />
+              {profileImage ? (
+                <ProfileImage src={profileImage} alt="Profile" />
+              ) : (
+                <ProfileInitials>{getUserInitials(user?.name)}</ProfileInitials>
+              )}
               <UploadOverlay className="upload-overlay">
                 <FiCamera size={24} />
                 <span>Change Photo</span>

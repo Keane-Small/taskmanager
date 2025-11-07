@@ -728,20 +728,7 @@ const MessagesPage = () => {
   };
 
   const getAvatarColor = (name) => {
-    const colors = [
-      "#FF6B6B",
-      "#4ECDC4",
-      "#45B7D1",
-      "#FFA07A",
-      "#98D8C8",
-      "#F7DC6F",
-      "#BB8FCE",
-      "#85C1E2",
-    ];
-    // Handle non-string inputs
-    const nameStr = typeof name === 'string' ? name : (name?.name || name?.email || 'User');
-    const index = nameStr.charCodeAt(0) % colors.length;
-    return colors[index];
+    return '#9ca3af';
   };
 
   const formatTime = (timestamp) => {

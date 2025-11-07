@@ -57,11 +57,11 @@ const CommentAvatar = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: ${props => props.$color || '#E0E0E0'};
+  background: ${props => props.$color || '#f5f5f5'};
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFF;
+  color: white;
   font-weight: 600;
   font-size: 14px;
   flex-shrink: 0;
@@ -308,9 +308,7 @@ const CommentSection = ({ taskId, projectId }) => {
   };
 
   const getAvatarColor = (name) => {
-    const colors = ['#FF6B6B', '#4ECDC4', '#95E1D3', '#FFD93D', '#6C5CE7', '#A29BFE', '#FD79A8', '#74B9FF'];
-    const index = name ? name.charCodeAt(0) % colors.length : 0;
-    return colors[index];
+    return '#9ca3af';
   };
 
   const formatTime = (date) => {
