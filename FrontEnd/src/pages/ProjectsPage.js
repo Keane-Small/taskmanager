@@ -521,7 +521,11 @@ const ProjectsPage = () => {
       });
 
       if (response.ok) {
+        // Update project list and clear selected project if it was deleted
         setProjectList(projectList.filter(p => (p._id || p.id) !== projectId));
+        if (selectedProject && selectedProject._id === projectId) {
+          setSelectedProject(null);
+        }
       }
     } catch (error) {
       console.error('Error deleting project:', error);
@@ -542,13 +546,17 @@ const ProjectsPage = () => {
   const handleAddTask = async (taskData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/projects/${selectedProject._id}/tasks`, {
+      const taskDataWithProject = {
+        ...taskData,
+        projectId: selectedProject._id
+      };
+      const response = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(taskData),
+        body: JSON.stringify(taskDataWithProject),
       });
 
       if (response.ok) {
@@ -581,7 +589,7 @@ const ProjectsPage = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/projects/${selectedProject._id}/tasks`, {
+      const response = await fetch(`${API_URL}/tasks/project/${selectedProject._id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -609,8 +617,16 @@ const ProjectsPage = () => {
   };
 
   const formatDate = (date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (!date || date === null || date === undefined || date === 'TBD') return '';
+    
+    try {
+      const dateObj = new Date(date);
+      // Check if date is valid
+      if (isNaN(dateObj.getTime())) return '';
+      return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch (error) {
+      return '';
+    }
   };
 
   const calculateTaskProgress = (task) => {
@@ -646,10 +662,19 @@ const ProjectsPage = () => {
               <span style={{ margin: '0 8px', color: 'rgba(255, 255, 255, 0.5)' }}>/</span>
               <span>{selectedProject.name}</span>
             </Breadcrumb>
-            <ChangeButton onClick={() => setSelectedProject(null)}>
-              <FiArrowLeft size={14} style={{ marginRight: '4px' }} />
-              Back
-            </ChangeButton>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <ChangeButton 
+                onClick={() => handleDeleteProject(selectedProject._id, selectedProject.name)}
+                style={{ backgroundColor: '#dc2626', border: '1px solid #dc2626' }}
+              >
+                <FiTrash2 size={14} style={{ marginRight: '4px' }} />
+                Delete
+              </ChangeButton>
+              <ChangeButton onClick={() => setSelectedProject(null)}>
+                <FiArrowLeft size={14} style={{ marginRight: '4px' }} />
+                Back
+              </ChangeButton>
+            </div>
           </TopRow>
           <ProjectTitle>{selectedProject.name}</ProjectTitle>
           
@@ -669,18 +694,20 @@ const ProjectsPage = () => {
                 </Tag>
               </MetadataValue>
             </MetadataItem>
-            <MetadataItem>
-              <MetadataLabel>Start Date</MetadataLabel>
-              <MetadataValue>
-                <FiCalendar size={14} />
-                {formatDate(selectedProject.startDate) || 'Not set'}
-              </MetadataValue>
-            </MetadataItem>
+            {selectedProject.startDate && (
+              <MetadataItem>
+                <MetadataLabel>Start Date</MetadataLabel>
+                <MetadataValue>
+                  <FiCalendar size={14} />
+                  {formatDate(selectedProject.startDate)}
+                </MetadataValue>
+              </MetadataItem>
+            )}
             <MetadataItem>
               <MetadataLabel>Due Date</MetadataLabel>
               <MetadataValue>
                 <FiCalendar size={14} />
-                {formatDate(selectedProject.dueDate) || 'Not set'}
+                {formatDate(selectedProject.dueDate) || 'No due date'}
               </MetadataValue>
             </MetadataItem>
             <MetadataItem>

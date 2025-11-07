@@ -6,13 +6,15 @@ const NotificationService = require('../services/notificationService');
 // Create a new project
 exports.createProject = async (req, res) => {
   try {
-    const { name, status, dueDate, collaborators, color } = req.body;
+    const { name, status, dueDate, startDate, priority, collaborators, color } = req.body;
     const userId = req.userId; // From auth middleware
 
     const project = await Project.create({
       name,
       status: status || 'Planning',
-      dueDate: dueDate || 'TBD',
+      priority: priority || 'medium',
+      startDate: startDate || null,
+      dueDate: dueDate || null,
       collaborators: collaborators || [],
       color: color || '#F9F9F9',
       userId
@@ -92,7 +94,7 @@ exports.getProjectById = async (req, res) => {
 // Update project
 exports.updateProject = async (req, res) => {
   try {
-    const { name, status, dueDate, collaborators, color, totalTasks, completedTasks } = req.body;
+    const { name, status, dueDate, startDate, priority, collaborators, color, totalTasks, completedTasks } = req.body;
     
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ message: 'Project not found' });
@@ -105,6 +107,8 @@ exports.updateProject = async (req, res) => {
     const updates = {};
     if (name !== undefined) updates.name = name;
     if (status !== undefined) updates.status = status;
+    if (priority !== undefined) updates.priority = priority;
+    if (startDate !== undefined) updates.startDate = startDate;
     if (dueDate !== undefined) updates.dueDate = dueDate;
     if (collaborators !== undefined) updates.collaborators = collaborators;
     if (color !== undefined) updates.color = color;

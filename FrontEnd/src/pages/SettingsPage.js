@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FiUser, FiMail, FiLock, FiSave, FiCamera, FiLogOut } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiSave, FiCamera, FiLogOut, FiSettings, FiShield } from "react-icons/fi";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
@@ -12,126 +12,339 @@ const ContentBox = styled.div`
   top: 95px;
   right: 20px;
   bottom: 15px;
-  background-color: #fafafa;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  padding: 30px;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 16px;
   overflow-y: auto;
+  padding: 0;
+
+  @media (max-width: 768px) {
+    position: static;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    margin: 20px;
+    border-radius: 12px;
+    min-height: calc(100vh - 140px);
+  }
+
+  @media (max-width: 480px) {
+    margin: 10px;
+    border-radius: 8px;
+  }
+`;
+
+const Header = styled.div`
+  background: linear-gradient(135deg, #f0f9f3 0%, #e8f5ea 100%);
+  color: #1a4d2a;
+  padding: 2rem;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 3px solid #2D5A3D;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(45, 90, 61, 0.05);
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 150px;
+    height: 150px;
+    background: rgba(45, 90, 61, 0.03);
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 12px 12px 0 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    border-radius: 8px 8px 0 0;
+  }
+`;
+
+const HeaderContent = styled.div`
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+`;
+
+const HeaderIcon = styled.div`
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.3);
+
+  @media (max-width: 480px) {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+`;
+
+const HeaderText = styled.div`
+  flex: 1;
 `;
 
 const Heading = styled.h1`
-  margin: 0 0 30px 0;
-  font-size: 32px;
-  font-weight: 600;
-  color: #000000;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a4d2a;
+  
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
+`;
+
+const Subtitle = styled.p`
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+  color: #4a7c5d;
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0 0;
+  }
 `;
 
 const SettingsContainer = styled.div`
+  padding: 2rem;
   max-width: 800px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
 `;
 
 const Section = styled.div`
   background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(45, 90, 61, 0.08);
+  border: 1px solid rgba(45, 90, 61, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba(45, 90, 61, 0.12);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 20px;
-  font-weight: 600;
-  color: #000000;
-  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2D5A3D;
+  margin: 0 0 1.5rem 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(45, 90, 61, 0.1);
+
+  svg {
+    font-size: 1.5rem;
+    color: #2D5A3D;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    
+    svg {
+      font-size: 1.25rem;
+    }
+  }
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
 `;
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #333;
+  color: #374151;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.2s;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
   box-sizing: border-box;
+  font-family: inherit;
+  background: #ffffff;
 
   &:focus {
     outline: none;
-    border-color: #000000;
+    border-color: #2D5A3D;
+    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
   }
 
   &:disabled {
-    background-color: #f5f5f5;
+    background-color: #f9fafb;
+    color: #6b7280;
     cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
   }
 `;
 
 const Button = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background-color: #000000;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  min-width: 140px;
 
   &:hover {
-    background-color: #333333;
-    transform: scale(1.02);
+    background: linear-gradient(135deg, #1F3E2A 0%, #2D5A3D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(45, 90, 61, 0.3);
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translateY(0);
   }
 
   &:disabled {
-    background-color: #cccccc;
+    background: #9ca3af;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
   }
 `;
 
 const Message = styled.div`
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background-color: ${(props) =>
-    props.$type === "success" ? "#D4EDDA" : "#F8D7DA"};
-  color: ${(props) => (props.$type === "success" ? "#155724" : "#721C24")};
-  border: 1px solid
-    ${(props) => (props.$type === "success" ? "#C3E6CB" : "#F5C6CB")};
+    props.$type === "success" 
+      ? "rgba(45, 90, 61, 0.1)" 
+      : "rgba(239, 68, 68, 0.1)"};
+  color: ${(props) => 
+    props.$type === "success" 
+      ? "#2D5A3D" 
+      : "#dc2626"};
+  border: 2px solid ${(props) =>
+    props.$type === "success" 
+      ? "rgba(45, 90, 61, 0.2)" 
+      : "rgba(239, 68, 68, 0.2)"};
+
+  &::before {
+    content: ${(props) => props.$type === "success" ? "'✓'" : "'⚠'"};
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
 `;
 
 const InfoText = styled.p`
-  color: #666;
-  font-size: 14px;
-  margin: 8px 0 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+  line-height: 1.4;
 `;
 
 const ProfileImageSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 2rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
 `;
 
 const ProfileImageContainer = styled.div`
@@ -140,11 +353,22 @@ const ProfileImageContainer = styled.div`
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  background: #f0f0f0;
-  border: 4px solid #e0e0e0;
+  background: #f3f4f6;
+  border: 4px solid rgba(45, 90, 61, 0.2);
+  transition: all 0.3s ease;
 
-  &:hover .upload-overlay {
-    opacity: 1;
+  &:hover {
+    border-color: #2D5A3D;
+    transform: scale(1.05);
+    
+    .upload-overlay {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 100px;
+    height: 100px;
   }
 `;
 
@@ -161,10 +385,14 @@ const ProfileInitials = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
-  font-weight: 600;
+  font-size: 3rem;
+  font-weight: 700;
   color: white;
   text-transform: uppercase;
+
+  @media (max-width: 480px) {
+    font-size: 2.5rem;
+  }
 `;
 
 const UploadOverlay = styled.label`
@@ -173,17 +401,23 @@ const UploadOverlay = styled.label`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(45, 90, 61, 0.9);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: all 0.3s ease;
   cursor: pointer;
   color: white;
-  font-size: 12px;
-  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 0.25rem;
+  backdrop-filter: blur(4px);
+
+  svg {
+    font-size: 1.5rem;
+  }
 `;
 
 const HiddenInput = styled.input`
@@ -195,37 +429,43 @@ const ImageInfo = styled.div`
 `;
 
 const ImageTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  color: #000;
-  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2D5A3D;
+  margin: 0 0 0.5rem 0;
 `;
 
 const ImageDescription = styled.p`
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
 `;
 
 const DangerButton = styled(Button)`
-  background-color: #dc3545;
-  color: #ffffff;
-
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  
   &:hover {
-    background-color: #c82333;
-    transform: scale(1.02);
-  }
-
-  &:active {
-    transform: scale(0.98);
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
   }
 `;
 
 const SignOutDescription = styled.p`
-  color: #666;
-  font-size: 14px;
-  margin: 0 0 20px 0;
-  line-height: 1.5;
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 `;
 
 const SettingsPage = () => {
@@ -472,14 +712,24 @@ const SettingsPage = () => {
 
   return (
     <ContentBox>
-      <Heading>Settings</Heading>
+      <Header>
+        <HeaderContent>
+          <HeaderIcon>
+            <FiSettings />
+          </HeaderIcon>
+          <HeaderText>
+            <Heading>Account Settings</Heading>
+            <Subtitle>Manage your profile and preferences</Subtitle>
+          </HeaderText>
+        </HeaderContent>
+      </Header>
 
       <SettingsContainer>
         {message.text && <Message $type={message.type}>{message.text}</Message>}
 
         <Section>
           <SectionTitle>
-            <FiCamera size={24} />
+            <FiCamera />
             Profile Picture
           </SectionTitle>
           <ProfileImageSection>
@@ -490,7 +740,7 @@ const SettingsPage = () => {
                 <ProfileInitials>{getUserInitials(user?.name)}</ProfileInitials>
               )}
               <UploadOverlay className="upload-overlay">
-                <FiCamera size={24} />
+                <FiCamera />
                 <span>Change Photo</span>
                 <HiddenInput
                   type="file"
@@ -500,19 +750,17 @@ const SettingsPage = () => {
               </UploadOverlay>
             </ProfileImageContainer>
             <ImageInfo>
-              <ImageTitle>Upload Profile Picture</ImageTitle>
+              <ImageTitle>Profile Picture</ImageTitle>
               <ImageDescription>
-                Click on the image to upload a new profile picture. Maximum file
-                size: 5MB
+                Choose a profile picture to personalize your account. Click on the image to upload a new photo. Maximum file size: 5MB. Supported formats: JPG, PNG, GIF.
               </ImageDescription>
               {imageFile && (
                 <Button
                   type="button"
                   onClick={handleImageUpload}
                   disabled={loading}
-                  style={{ marginTop: "12px" }}
                 >
-                  <FiSave size={18} />
+                  <FiSave />
                   {loading ? "Uploading..." : "Save Image"}
                 </Button>
               )}
@@ -522,48 +770,48 @@ const SettingsPage = () => {
 
         <Section>
           <SectionTitle>
-            <FiUser size={24} />
-            Profile Information
+            <FiUser />
+            Personal Information
           </SectionTitle>
           <form onSubmit={handleProfileSubmit}>
             <FormGroup>
-              <Label>Name</Label>
+              <Label>Full Name</Label>
               <Input
                 type="text"
                 name="name"
                 value={profileData.name}
                 onChange={handleProfileChange}
-                placeholder="Enter your name"
+                placeholder="Enter your full name"
                 required
               />
             </FormGroup>
 
             <FormGroup>
-              <Label>Email</Label>
+              <Label>Email Address</Label>
               <Input
                 type="email"
                 name="email"
                 value={profileData.email}
                 onChange={handleProfileChange}
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 required
               />
               <InfoText>
-                Your email is used for login and notifications
+                Your email is used for login, notifications, and account recovery
               </InfoText>
             </FormGroup>
 
             <Button type="submit" disabled={loading}>
-              <FiSave size={18} />
-              {loading ? "Saving..." : "Save Profile"}
+              <FiSave />
+              {loading ? "Saving Changes..." : "Save Changes"}
             </Button>
           </form>
         </Section>
 
         <Section>
           <SectionTitle>
-            <FiLock size={24} />
-            Change Password
+            <FiShield />
+            Password & Security
           </SectionTitle>
           <form onSubmit={handlePasswordSubmit}>
             <FormGroup>
@@ -573,7 +821,7 @@ const SettingsPage = () => {
                 name="currentPassword"
                 value={passwordData.currentPassword}
                 onChange={handlePasswordChange}
-                placeholder="Enter current password"
+                placeholder="Enter your current password"
                 required
               />
             </FormGroup>
@@ -585,10 +833,10 @@ const SettingsPage = () => {
                 name="newPassword"
                 value={passwordData.newPassword}
                 onChange={handlePasswordChange}
-                placeholder="Enter new password"
+                placeholder="Enter your new password"
                 required
               />
-              <InfoText>Password must be at least 6 characters</InfoText>
+              <InfoText>Password must be at least 6 characters long and contain a mix of letters and numbers</InfoText>
             </FormGroup>
 
             <FormGroup>
@@ -598,60 +846,68 @@ const SettingsPage = () => {
                 name="confirmPassword"
                 value={passwordData.confirmPassword}
                 onChange={handlePasswordChange}
-                placeholder="Confirm new password"
+                placeholder="Confirm your new password"
                 required
               />
             </FormGroup>
 
             <Button type="submit" disabled={loading}>
-              <FiLock size={18} />
-              {loading ? "Updating..." : "Update Password"}
+              <FiLock />
+              {loading ? "Updating Password..." : "Update Password"}
             </Button>
           </form>
         </Section>
 
         <Section>
           <SectionTitle>
-            <FiMail size={24} />
-            Account Information
+            <FiMail />
+            Account Details
           </SectionTitle>
           <FormGroup>
             <Label>User ID</Label>
             <Input
               type="text"
-              value={user?._id || user?.id || "N/A"}
+              value={user?._id || user?.id || "Not available"}
               disabled
+              readOnly
             />
-            <InfoText>Your unique user identifier</InfoText>
+            <InfoText>Your unique account identifier - this cannot be changed</InfoText>
           </FormGroup>
 
           <FormGroup>
-            <Label>Account Created</Label>
+            <Label>Member Since</Label>
             <Input
               type="text"
               value={
                 user?.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString()
-                  : "N/A"
+                  ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  : "Not available"
               }
               disabled
+              readOnly
             />
+            <InfoText>The date when your account was created</InfoText>
           </FormGroup>
         </Section>
 
         <Section>
           <SectionTitle>
-            <FiLogOut size={24} />
-            Sign Out
+            <FiLogOut />
+            Session Management
           </SectionTitle>
           <SignOutDescription>
-            Sign out of your account on this device. You will need to enter your 
-            credentials to sign back in.
+            Sign out of your account on this device. You'll need to enter your credentials to sign back in. This will not affect your account or data, only your current session.
           </SignOutDescription>
-          <DangerButton type="button" onClick={handleSignOut}>
-            <FiLogOut size={18} />
-            Sign Out
-          </DangerButton>
+          <ButtonGroup>
+            <DangerButton type="button" onClick={handleSignOut}>
+              <FiLogOut />
+              Sign Out
+            </DangerButton>
+          </ButtonGroup>
         </Section>
       </SettingsContainer>
     </ContentBox>

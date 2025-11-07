@@ -11,11 +11,12 @@ const ModalOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 99999;
+  padding: 20px;
 `;
 
 const ModalContent = styled(motion.div)`
@@ -24,8 +25,17 @@ const ModalContent = styled(motion.div)`
   padding: 30px;
   width: 90%;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   position: relative;
+  margin: auto;
+  
+  @media (max-width: 768px) {
+    width: 95%;
+    padding: 20px;
+    max-height: 95vh;
+  }
 `;
 
 const ModalHeader = styled.div`
@@ -179,7 +189,7 @@ const UserDropdown = styled.div`
   border-radius: 8px;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 100000;
   margin-top: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
@@ -248,7 +258,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     name: '',
     status: 'Planning',
     priority: 'medium',
-    startDate: '',
+    startDate: new Date().toISOString().split('T')[0], // Today's date as default
     dueDate: '',
     collaborators: []
   });
@@ -329,7 +339,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       priority: formData.priority,
       status: formData.status,
       startDate: formData.startDate || null,
-      dueDate: formData.dueDate || 'TBD',
+      dueDate: formData.dueDate || null,
       collaborators: formData.collaborators.map(c => ({
         userId: c.userId,
         role: c.role
@@ -343,7 +353,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       name: '',
       status: 'Planning',
       priority: 'medium',
-      startDate: '',
+      startDate: new Date().toISOString().split('T')[0], // Today's date as default
       dueDate: '',
       collaborators: []
     });
@@ -355,7 +365,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       name: '',
       status: 'Planning',
       priority: 'medium',
-      startDate: '',
+      startDate: new Date().toISOString().split('T')[0], // Today's date as default
       dueDate: '',
       collaborators: []
     });
@@ -425,32 +435,24 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               </FormGroup>
               
               <FormGroup>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>Start Date (Optional)</FormLabel>
                 <Input
                   type="date"
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleInputChange}
+                  placeholder="Select start date"
                 />
               </FormGroup>
 
               <FormGroup>
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel>Due Date (Optional)</FormLabel>
                 <Input
                   type="date"
-                  name="startDate"
-                  value={formData.startDate}
+                  name="dueDate"
+                  value={formData.dueDate}
                   onChange={handleInputChange}
-                />
-              </FormGroup>
-              
-              <FormGroup>
-                <FormLabel>End Date (Due Date)</FormLabel>
-                <Input
-                  type="date"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleInputChange}
+                  placeholder="Select due date"
                 />
               </FormGroup>
               

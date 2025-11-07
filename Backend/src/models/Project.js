@@ -13,7 +13,7 @@ const projectSchema = new mongoose.Schema({
     default: 'Planning' 
   },
   startDate: { type: Date },
-  dueDate: { type: String, default: 'TBD' },
+  dueDate: { type: Date },
   collaborators: [{ 
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     role: { type: String, enum: ['Viewer', 'Editor', 'Admin'], default: 'Editor' },
