@@ -481,18 +481,18 @@ const TasksList = styled.div`
 `;
 
 const TaskCard = styled(motion.div)`
-  background: #ffffff;
-  border: 1px solid rgba(45, 90, 61, 0.1);
+  background: ${props => props.$bgColor || '#ffffff'};
+  border: 1px solid rgba(45, 90, 61, 0.15);
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(45, 90, 61, 0.05);
+  box-shadow: 0 2px 8px rgba(45, 90, 61, 0.08);
 
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(45, 90, 61, 0.15);
-    border-color: rgba(45, 90, 61, 0.2);
+    border-color: rgba(45, 90, 61, 0.25);
   }
 `;
 
@@ -507,7 +507,7 @@ const TaskDate = styled.div`
 `;
 
 const TaskTitle = styled.div`
-  color: #2D5A3D;
+  color: #000000;
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -778,9 +778,35 @@ const ProjectsPage = () => {
     return tasks.filter(task => task.status === status);
   };
 
-  const getTaskColor = (index) => {
-    const colors = ['#A0E7C5', '#FFD4A3', '#D4B5FF', '#A3D8FF'];
-    return colors[index % colors.length];
+  const getTaskColor = (project, index) => {
+    const pastelColors = [
+      '#FFB5D8', // Soft Pink
+      '#B5D8FF', // Soft Blue  
+      '#C8E6C9', // Soft Green
+      '#FFE0B2', // Soft Orange
+      '#D1C4E9', // Soft Purple
+      '#B2DFDB', // Soft Teal
+      '#FFF9C4', // Soft Yellow
+      '#FFCCBC', // Soft Peach
+      '#E1BEE7', // Soft Lavender
+      '#C8E6C9', // Soft Mint
+      '#F8BBD9', // Soft Rose
+      '#DCEDC1', // Soft Lime
+      '#BBDEFB', // Soft Sky Blue
+      '#FFF8E1', // Soft Cream
+      '#F3E5F5', // Soft Violet
+      '#E0F2F1'  // Soft Seafoam
+    ];
+    
+    // Use consistent assignment based on project name (same logic as calendar)
+    if (project && project.name) {
+      const projectHash = project.name.split('').reduce((hash, char) => hash + char.charCodeAt(0), 0);
+      const colorIndex = projectHash % pastelColors.length;
+      return pastelColors[colorIndex];
+    }
+    
+    // Fallback to index-based for other cases
+    return pastelColors[index % pastelColors.length];
   };
 
   const formatDate = (date) => {
@@ -960,7 +986,7 @@ const ProjectsPage = () => {
                 {backlogTasks.length > 0 ? backlogTasks.map((task, index) => (
                   <TaskCard
                     key={task._id}
-                    $bgColor={getTaskColor(index)}
+                    $bgColor={getTaskColor(selectedProject, index)}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
@@ -974,7 +1000,7 @@ const ProjectsPage = () => {
                       <PriorityBadge $priority={task.priority}>{task.priority || 'low'}</PriorityBadge>
                       <TaskAvatars>
                         {task.assignedTo && task.assignedTo.slice(0, 2).map((user, i) => (
-                          <TaskAvatar key={i} $borderColor={getTaskColor(index)}>
+                          <TaskAvatar key={i} $borderColor={getTaskColor(selectedProject, index)}>
                             {typeof user === 'object' ? user.name?.substring(0, 2).toUpperCase() : 'U'}
                           </TaskAvatar>
                         ))}
@@ -1007,7 +1033,7 @@ const ProjectsPage = () => {
                 {inProgressTasks.length > 0 ? inProgressTasks.map((task, index) => (
                   <TaskCard
                     key={task._id}
-                    $bgColor={getTaskColor(index + 1)}
+                    $bgColor={getTaskColor(selectedProject, index + 1)}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
@@ -1021,7 +1047,7 @@ const ProjectsPage = () => {
                       <PriorityBadge $priority={task.priority}>{task.priority || 'medium'}</PriorityBadge>
                       <TaskAvatars>
                         {task.assignedTo && task.assignedTo.slice(0, 2).map((user, i) => (
-                          <TaskAvatar key={i} $borderColor={getTaskColor(index + 1)}>
+                          <TaskAvatar key={i} $borderColor={getTaskColor(selectedProject, index + 1)}>
                             {typeof user === 'object' ? user.name?.substring(0, 2).toUpperCase() : 'U'}
                           </TaskAvatar>
                         ))}
@@ -1052,7 +1078,7 @@ const ProjectsPage = () => {
                 {doneTasks.length > 0 ? doneTasks.map((task, index) => (
                   <TaskCard
                     key={task._id}
-                    $bgColor={getTaskColor(index + 2)}
+                    $bgColor={getTaskColor(selectedProject, index + 2)}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}

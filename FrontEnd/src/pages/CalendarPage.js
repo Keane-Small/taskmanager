@@ -107,18 +107,26 @@ const WeekHeader = styled.div`
 const MonthGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
+  gap: 0px;
   background-color: #F0F0F0;
+  border: 1px solid #E0E0E0;
 `;
 
 const MonthDay = styled.div`
   background-color: #FFFFFF;
-  min-height: 120px;
-  padding: 12px 4px;
-  border: 1px solid #F0F0F0;
+  min-height: 140px;
+  padding: 8px 0px;
+  border: 1px solid #E0E0E0;
+  border-left: ${props => props.$hasTimelineStart ? '0px' : '1px solid #E0E0E0'};
+  border-right: ${props => props.$hasTimelineEnd ? '0px' : '1px solid #E0E0E0'};
   position: relative;
   opacity: ${props => props.$isCurrentMonth ? 1 : 0.5};
-  overflow: hidden;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  
+  /* Remove horizontal spacing for timeline continuity */
+  margin: 0;
   
   &:hover {
     background-color: #FAFAFA;
@@ -140,43 +148,79 @@ const MonthDayNumber = styled.div`
 `;
 
 const MonthEvent = styled.div`
-  background-color: ${props => props.$color};
-  border-radius: ${props => {
-    if (props.$timelineType === 'start') return '4px 0 0 4px';
-    if (props.$timelineType === 'end') return '0 4px 4px 0';
-    if (props.$timelineType === 'middle') return '0';
-    return '4px';
+  background: ${props => {
+    const baseColor = props.$color || '#FFB5D8';
+    return baseColor;
   }};
-  padding: 2px 6px;
-  margin-bottom: 2px;
-  font-size: 10px;
+  border-radius: ${props => {
+    if (props.$timelineType === 'start') return '8px 0px 0px 8px';
+    if (props.$timelineType === 'end') return '0px 8px 8px 0px';
+    if (props.$timelineType === 'middle') return '0px';
+    return '8px';
+  }};
+  padding: ${props => props.$timelineType === 'middle' ? '6px 4px' : '6px 10px'};
+  margin: ${props => {
+    if (props.$timelineType === 'start') return '2px -1px 2px 2px';
+    if (props.$timelineType === 'middle') return '2px -1px';
+    if (props.$timelineType === 'end') return '2px 2px 2px -1px';
+    return '2px';
+  }};
+  font-size: ${props => props.$timelineType === 'middle' ? '0px' : '11px'};
   font-weight: 500;
-  color: #000000;
+  color: #2c3e50;
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   position: relative;
-  min-height: ${props => props.$timelineType ? '16px' : 'auto'};
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  z-index: 10;
+  transition: all 0.15s ease;
   
+  /* Create continuous solid line appearance */
   ${props => props.$timelineType === 'middle' && `
-    margin-left: -4px;
-    margin-right: -4px;
+    /* Middle segments show only a thin line indicator */
+    background: ${props.$color};
+    min-height: 4px;
+    padding: 0;
+    margin: 12px -1px;
     border-radius: 0;
-    padding: 2px 4px;
+    
+    /* Small dot indicator in center */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: rgba(44, 62, 80, 0.3);
+      border-radius: 50%;
+    }
   `}
   
+  /* Remove gaps between timeline segments */
   ${props => props.$timelineType === 'start' && `
-    border-right: 2px solid rgba(0,0,0,0.2);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   `}
   
   ${props => props.$timelineType === 'end' && `
-    border-left: 2px solid rgba(0,0,0,0.2);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   `}
-  
+
   &:hover {
-    transform: ${props => props.$timelineType === 'middle' ? 'none' : 'scale(1.05)'};
-    opacity: ${props => props.$timelineType === 'middle' ? '0.8' : '1'};
+    transform: ${props => props.$timelineType === 'middle' ? 'scaleY(1.5)' : 'translateY(-1px)'};
+    box-shadow: ${props => props.$timelineType === 'middle' ? 
+      '0 0 4px rgba(0,0,0,0.2)' : 
+      '0 2px 6px rgba(0,0,0,0.12)'
+    };
   }
 `;
 
@@ -416,45 +460,33 @@ const CalendarPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [showTaskBoard, setShowTaskBoard] = useState(false);
 
-  // Generate consistent colors for projects
+  // Generate consistent pastel colors for projects
   const getProjectColor = (project, index) => {
-    // If project has a custom color, use it
-    if (project.color && project.color !== '#FFE5B4') {
-      return project.color;
-    }
-    
-    const projectColors = [
-      '#FF5722', // Deep Orange
-      '#009688', // Teal
-      '#2196F3', // Blue
-      '#4CAF50', // Green
-      '#FFC107', // Amber
-      '#9C27B0', // Purple
-      '#00BCD4', // Cyan
-      '#FF9800', // Orange
-      '#673AB7', // Deep Purple
-      '#3F51B5', // Indigo
-      '#E91E63', // Pink
-      '#8BC34A', // Light Green
-      '#CDDC39', // Lime
-      '#607D8B', // Blue Grey
-      '#795548', // Brown
-      '#F44336', // Red
-      '#00E676', // Green Accent
-      '#40C4FF', // Light Blue Accent
-      '#E040FB', // Purple Accent
-      '#FFEB3B'  // Yellow
+    const pastelColors = [
+      '#FFB5D8', // Soft Pink
+      '#B5D8FF', // Soft Blue  
+      '#C8E6C9', // Soft Green
+      '#FFE0B2', // Soft Orange
+      '#D1C4E9', // Soft Purple
+      '#B2DFDB', // Soft Teal
+      '#FFF9C4', // Soft Yellow
+      '#FFCCBC', // Soft Peach
+      '#E1BEE7', // Soft Lavender
+      '#C8E6C9', // Soft Mint
+      '#F8BBD9', // Soft Rose
+      '#DCEDC1', // Soft Lime
+      '#BBDEFB', // Soft Sky Blue
+      '#FFF8E1', // Soft Cream
+      '#F3E5F5', // Soft Violet
+      '#E0F2F1'  // Soft Seafoam
     ];
     
-    // Use project ID to create a consistent hash for color selection
-    const projectId = project._id || project.id || project.name;
-    let hash = 0;
-    for (let i = 0; i < projectId.length; i++) {
-      hash = projectId.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const colorIndex = Math.abs(hash) % projectColors.length;
+    // Use consistent assignment based on project name for predictable colors
+    const projectHash = project.name.split('').reduce((hash, char) => hash + char.charCodeAt(0), 0);
+    const colorIndex = projectHash % pastelColors.length;
+    const selectedColor = pastelColors[colorIndex];
     
-    return projectColors[colorIndex];
+    return selectedColor;
   };
 
   useEffect(() => {
@@ -484,6 +516,7 @@ const CalendarPage = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Calendar: Fetched projects:', data);
+        console.log('Calendar: Projects with dates:', data.map(p => ({ name: p.name, startDate: p.startDate, dueDate: p.dueDate })));
         setProjects(data);
       }
     } catch (error) {
@@ -559,6 +592,7 @@ const CalendarPage = () => {
     if (viewType === 'month') {
       // For month view, show timeline-style highlighting for projects
       projects.forEach((project, index) => {
+          // Handle projects with both start and due dates (timeline)
         if (project.startDate && project.dueDate && 
             project.startDate !== 'TBD' && project.dueDate !== 'TBD') {
           const startDate = new Date(project.startDate);
@@ -568,8 +602,7 @@ const CalendarPage = () => {
           // Check if current date is within project timeline
           if (currentDate >= startDate && currentDate <= dueDate) {
             const projectColor = getProjectColor(project, index);
-            
-            // Determine position in timeline
+            console.log(`Project ${project.name} assigned color: ${projectColor}`);            // Determine position in timeline
             let timelineType = 'middle';
             if (currentDate.toDateString() === startDate.toDateString()) {
               timelineType = 'start';
@@ -577,6 +610,7 @@ const CalendarPage = () => {
               timelineType = 'end';
             }
             
+            console.log(`Adding timeline event: ${project.name}, color: ${projectColor}, type: ${timelineType}`);
             events.push({
               title: project.name,
               color: projectColor,
@@ -593,6 +627,52 @@ const CalendarPage = () => {
                 ? Math.round((project.completedTasks / project.totalTasks) * 100) 
                 : 0
             });
+          }
+        } else {
+          // Handle projects with only start OR due date (show as single event)
+          const projectColor = getProjectColor(project, index);
+          console.log(`Single event project ${project.name} assigned color: ${projectColor}`);
+          
+          if (project.startDate && project.startDate !== 'TBD') {
+            const startDate = new Date(project.startDate);
+            if (startDate.toDateString() === date.toDateString()) {
+              events.push({
+                title: `${project.name} (Start)`,
+                color: projectColor,
+                type: 'single-event',
+                project: project,
+                participants: project.collaborators?.slice(0, 3).map(collab => {
+                  if (typeof collab === 'string') return collab;
+                  const name = collab.userId?.name || collab.userId?.email || 'U';
+                  return name.substring(0, 2).toUpperCase();
+                }) || [],
+                status: project.status,
+                progress: project.totalTasks > 0 
+                  ? Math.round((project.completedTasks / project.totalTasks) * 100) 
+                  : 0
+              });
+            }
+          }
+          
+          if (project.dueDate && project.dueDate !== 'TBD') {
+            const dueDate = new Date(project.dueDate);
+            if (dueDate.toDateString() === date.toDateString()) {
+              events.push({
+                title: `${project.name} (Due)`,
+                color: projectColor,
+                type: 'single-event',
+                project: project,
+                participants: project.collaborators?.slice(0, 3).map(collab => {
+                  if (typeof collab === 'string') return collab;
+                  const name = collab.userId?.name || collab.userId?.email || 'U';
+                  return name.substring(0, 2).toUpperCase();
+                }) || [],
+                status: project.status,
+                progress: project.totalTasks > 0 
+                  ? Math.round((project.completedTasks / project.totalTasks) * 100) 
+                  : 0
+              });
+            }
           }
         }
       });
@@ -858,28 +938,79 @@ const CalendarPage = () => {
                             title={`${event.title} - ${event.progress}% complete`}
                           >
                             {event.timelineType === 'start' && (
-                              <>
-                                <span style={{ fontSize: '8px', marginRight: '2px' }}>▶</span>
-                                <span style={{ fontWeight: '600' }}>{event.title}</span>
-                              </>
+                              <div style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                width: '100%',
+                                alignItems: 'flex-start'
+                              }}>
+                                <div style={{ 
+                                  fontSize: '11px', 
+                                  fontWeight: '700',
+                                  lineHeight: '1.2',
+                                  color: '#333'
+                                }}>
+                                  {event.title}
+                                </div>
+                                <div style={{ 
+                                  fontSize: '9px', 
+                                  color: 'rgba(0,0,0,0.6)',
+                                  marginTop: '2px'
+                                }}>
+                                  {event.status}
+                                </div>
+                              </div>
                             )}
                             {event.timelineType === 'end' && (
-                              <>
-                                <span style={{ fontWeight: '600' }}>{event.title}</span>
-                                <span style={{ fontSize: '8px', marginLeft: '2px' }}>◀</span>
-                              </>
+                              <div style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                width: '100%',
+                                alignItems: 'flex-end',
+                                textAlign: 'right'
+                              }}>
+                                <div style={{ 
+                                  fontSize: '11px', 
+                                  fontWeight: '700',
+                                  lineHeight: '1.2',
+                                  color: '#333'
+                                }}>
+                                  {event.title}
+                                </div>
+                                <div style={{ 
+                                  fontSize: '9px', 
+                                  color: 'rgba(0,0,0,0.6)',
+                                  marginTop: '2px'
+                                }}>
+                                  {event.progress}%
+                                </div>
+                              </div>
                             )}
                             {event.timelineType === 'middle' && (
+                              // Middle sections are handled by CSS ::after pseudo-element
+                              null
+                            )}
+                            {event.type === 'single-event' && (
                               <div style={{ 
-                                width: '100%', 
-                                height: '100%', 
                                 display: 'flex', 
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '8px',
-                                color: 'rgba(0,0,0,0.6)'
+                                flexDirection: 'column',
+                                width: '100%'
                               }}>
-                                ●
+                                <div style={{ 
+                                  fontSize: '11px', 
+                                  fontWeight: '700',
+                                  lineHeight: '1.2',
+                                  color: '#333'
+                                }}>
+                                  {event.title}
+                                </div>
+                                <div style={{ 
+                                  fontSize: '9px', 
+                                  color: 'rgba(0,0,0,0.6)',
+                                  marginTop: '2px'
+                                }}>
+                                  {event.status}
+                                </div>
                               </div>
                             )}
                           </MonthEvent>
