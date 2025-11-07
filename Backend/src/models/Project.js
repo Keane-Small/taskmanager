@@ -2,13 +2,18 @@ const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  priority: { 
+    type: String, 
+    enum: ['low', 'medium', 'high'], 
+    default: 'medium' 
+  },
   status: { 
     type: String, 
     enum: ['Planning', 'In Progress', 'Completed'], 
     default: 'Planning' 
   },
-  startDate: { type: String, default: 'TBD' },
-  endDate: { type: String, default: 'TBD' },
+  startDate: { type: Date },
+  dueDate: { type: String, default: 'TBD' },
   collaborators: [{ 
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     role: { type: String, enum: ['Viewer', 'Editor', 'Admin'], default: 'Editor' },

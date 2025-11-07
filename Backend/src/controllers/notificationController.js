@@ -25,7 +25,7 @@ exports.createNotification = async (req, res) => {
 exports.getNotifications = async (req, res) => {
   try {
     const userId = req.userId;
-    const { isRead } = req.query;
+    const { isRead, limit = 50, skip = 0 } = req.query;
 
     const filter = { userId };
     if (isRead !== undefined) {
@@ -34,7 +34,10 @@ exports.getNotifications = async (req, res) => {
 
     const notifications = await Notification.find(filter)
       .sort({ createdAt: -1 })
-      .populate('relatedId');
+      .limit(parseInt(limit))
+      .skip(parseInt(skip))
+      .populate('actionBy', 'name email')
+      .lean();
     
     res.json(notifications);
   } catch (err) {

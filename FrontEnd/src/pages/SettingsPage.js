@@ -1,16 +1,16 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../context/AuthContext";
-import { FiUser, FiMail, FiLock, FiSave, FiCamera } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiSave, FiCamera, FiLogOut } from "react-icons/fi";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const ContentBox = styled.div`
   position: fixed;
-  left: 95px;
-  top: 10px;
-  right: 15px;
-  bottom: 10px;
+  left: 100px;
+  top: 95px;
+  right: 20px;
+  bottom: 15px;
   background-color: #fafafa;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -193,8 +193,29 @@ const ImageDescription = styled.p`
   margin: 0;
 `;
 
+const DangerButton = styled(Button)`
+  background-color: #dc3545;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #c82333;
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const SignOutDescription = styled.p`
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+`;
+
 const SettingsPage = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [profileImage, setProfileImage] = useState(
@@ -413,6 +434,20 @@ const SettingsPage = () => {
     }
   };
 
+  const handleSignOut = () => {
+    // Clear localStorage completely
+    localStorage.removeItem("token");
+    localStorage.removeItem("taskflow_user");
+    
+    // Call logout from AuthContext
+    logout();
+    
+    // Optional: Show a brief success message before redirect
+    setMessage({ text: "Signed out successfully!", type: "success" });
+    
+    // The app will automatically redirect to login due to authentication state change
+  };
+
   console.log("SettingsPage rendering with user:", user);
 
   return (
@@ -578,6 +613,21 @@ const SettingsPage = () => {
               disabled
             />
           </FormGroup>
+        </Section>
+
+        <Section>
+          <SectionTitle>
+            <FiLogOut size={24} />
+            Sign Out
+          </SectionTitle>
+          <SignOutDescription>
+            Sign out of your account on this device. You will need to enter your 
+            credentials to sign back in.
+          </SignOutDescription>
+          <DangerButton type="button" onClick={handleSignOut}>
+            <FiLogOut size={18} />
+            Sign Out
+          </DangerButton>
         </Section>
       </SettingsContainer>
     </ContentBox>

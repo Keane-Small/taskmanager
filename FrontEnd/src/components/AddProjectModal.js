@@ -222,7 +222,7 @@ const Button = styled.button`
   cursor: pointer;
   transition: all 0.2s;
   
-  ${props => props.variant === 'primary' ? `
+  ${props => props.$variant === 'primary' ? `
     background-color: #000000;
     color: #FFFFFF;
     
@@ -247,8 +247,9 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     status: 'Planning',
+    priority: 'medium',
     startDate: '',
-    endDate: '',
+    dueDate: '',
     collaborators: []
   });
   
@@ -325,9 +326,10 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
 
     const projectData = {
       name: formData.name,
+      priority: formData.priority,
       status: formData.status,
-      startDate: formData.startDate || 'TBD',
-      endDate: formData.endDate || 'TBD',
+      startDate: formData.startDate || null,
+      dueDate: formData.dueDate || 'TBD',
       collaborators: formData.collaborators.map(c => ({
         userId: c.userId,
         role: c.role
@@ -340,8 +342,9 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       status: 'Planning',
+      priority: 'medium',
       startDate: '',
-      endDate: '',
+      dueDate: '',
       collaborators: []
     });
     setSearchQuery('');
@@ -351,8 +354,9 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       name: '',
       status: 'Planning',
+      priority: 'medium',
       startDate: '',
-      endDate: '',
+      dueDate: '',
       collaborators: []
     });
     setSearchQuery('');
@@ -395,6 +399,19 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               </FormGroup>
               
               <FormGroup>
+                <FormLabel>Priority</FormLabel>
+                <Select
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleInputChange}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </Select>
+              </FormGroup>
+
+              <FormGroup>
                 <FormLabel>Status</FormLabel>
                 <Select
                   name="status"
@@ -409,6 +426,16 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               
               <FormGroup>
                 <FormLabel>Start Date</FormLabel>
+                <Input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <FormLabel>Due Date</FormLabel>
                 <Input
                   type="date"
                   name="startDate"
@@ -479,7 +506,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
                 <Button type="button" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
+                <Button type="submit" $variant="primary">
                   Add Project
                 </Button>
               </ButtonGroup>
