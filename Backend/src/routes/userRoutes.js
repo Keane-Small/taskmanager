@@ -6,6 +6,10 @@ const auth = require('../middleware/auth');
 // Public
 router.post('/register', controller.createUser);
 router.post('/login', controller.login);
+router.post('/send-reset-otp', controller.sendPasswordResetOTP);
+router.post('/verify-otp', controller.verifyOTP);
+router.post('/reset-password-otp', controller.resetPasswordWithOTP);
+// Legacy routes (keep for backward compatibility)
 router.post('/forgot-password', controller.forgotPassword);
 router.post('/reset-password/:token', controller.resetPassword);
 router.get('/verify-reset-token/:token', controller.verifyResetToken);

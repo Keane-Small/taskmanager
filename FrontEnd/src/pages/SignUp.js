@@ -198,7 +198,7 @@ const SignUp = () => {
           </button>
 
           <p className="terms-text">
-            By signing up, you agree to our <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>
+            By signing up, you agree to our <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</Link> and <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>
           </p>
         </form>
 

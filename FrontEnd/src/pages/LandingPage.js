@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./LandingPage.css";
 import {
   FiCheckCircle,
@@ -267,6 +267,11 @@ const LandingPage = () => {
           <div className="footer-logo">
             <FiCheckCircle className="logo-icon" />
             <span className="logo-text">TaskFlow</span>
+          </div>
+          <div className="footer-links">
+            <Link to="/terms-of-service">Terms of Service</Link>
+            <span className="footer-separator">•</span>
+            <Link to="/privacy-policy">Privacy Policy</Link>
           </div>
           <p className="footer-text">© 2025 TaskFlow. All rights reserved.</p>
         </div>

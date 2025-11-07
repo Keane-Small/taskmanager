@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiCheckCircle, FiMail, FiLock, FiEye, FiEyeOff, FiX, FiUser } from 'react-icons/fi';
+import { FiCheckCircle, FiMail, FiLock, FiEye, FiEyeOff, FiX, FiUser, FiCheck } from 'react-icons/fi';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -65,25 +65,6 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
         } else {
           setError(data.message || 'Login failed. Please check your credentials.');
         }
-      } else if (mode === 'forgot-password') {
-        const response = await fetch(`${API_URL}/users/forgot-password`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setSuccessMessage('Password reset link has been sent to your email address.');
-          setFormData({ name: '', email: '', password: '', confirmPassword: '' });
-        } else {
-          setError(data.message || 'Failed to send reset email. Please try again.');
-        }
       } else {
         // Signup validation
         if (formData.password !== formData.confirmPassword) {
@@ -144,9 +125,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const toggleMode = () => {
     if (mode === 'login') {
       setMode('signup');
-    } else if (mode === 'signup') {
-      setMode('login');
-    } else if (mode === 'forgot-password') {
+    } else {
       setMode('login');
     }
     setError('');
@@ -155,26 +134,16 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   };
 
   const showForgotPassword = () => {
-    setMode('forgot-password');
-    setError('');
-    setSuccessMessage('');
-    setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+    onClose();
+    navigate('/forgot-password-otp');
   };
 
   const getTitle = () => {
-    switch (mode) {
-      case 'signup': return 'Get started free';
-      case 'forgot-password': return 'Reset Password';
-      default: return 'Welcome back';
-    }
+    return mode === 'signup' ? 'Get started free' : 'Welcome back';
   };
 
   const getSubtitle = () => {
-    switch (mode) {
-      case 'signup': return 'Create your account and start organizing your tasks';
-      case 'forgot-password': return 'Enter your email to receive a password reset link';
-      default: return 'Sign in to continue to TaskFlow';
-    }
+    return mode === 'signup' ? 'Create your account and start organizing your tasks' : 'Sign in to continue to TaskFlow';
   };
 
   return (
@@ -228,7 +197,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
               )}
 
               <FormGroup>
-                <Label>{mode === 'forgot-password' ? 'Email' : 'Email address'}</Label>
+                <Label>Email address</Label>
                 <InputWrapper>
                   <FiMail className="input-icon" />
                   <Input
@@ -242,9 +211,8 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
                 </InputWrapper>
               </FormGroup>
 
-              {mode !== 'forgot-password' && (
-                <FormGroup>
-                  <Label>Password</Label>
+              <FormGroup>
+                <Label>Password</Label>
                   <InputWrapper>
                     <FiLock className="input-icon" />
                     <Input
@@ -266,7 +234,6 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
                     <HelperText>Must be at least 6 characters</HelperText>
                   )}
                 </FormGroup>
-              )}
 
               {mode === 'signup' && (
                 <FormGroup>
@@ -309,38 +276,24 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
               )}
 
               <SubmitButton type="submit">
-                {mode === 'login' ? 'Sign In' : 
-                 mode === 'signup' ? 'Create Account' : 
-                 'Send Reset Link'}
+                {mode === 'login' ? 'Sign In' : 'Create Account'}
               </SubmitButton>
             </Form>
 
             {mode === 'signup' && (
               <Terms>
-                By signing up, you agree to our <TermsLink>Terms of Service</TermsLink> and <TermsLink>Privacy Policy</TermsLink>
+                By signing up, you agree to our <TermsLink onClick={() => window.open('/terms-of-service', '_blank')}>Terms of Service</TermsLink> and <TermsLink onClick={() => window.open('/privacy-policy', '_blank')}>Privacy Policy</TermsLink>
               </Terms>
             )}
 
             <Footer>
-              {mode !== 'forgot-password' && (
-                <>
-                  <span>or</span>
-                  <FooterText>
-                    {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-                    <FooterLink onClick={toggleMode}>
-                      {mode === 'login' ? 'Sign up' : 'Sign in'}
-                    </FooterLink>
-                  </FooterText>
-                </>
-              )}
-              {mode === 'forgot-password' && (
-                <FooterText>
-                  Remember your password? 
-                  <FooterLink onClick={toggleMode}>
-                    Back to Sign in
-                  </FooterLink>
-                </FooterText>
-              )}
+              <span>or</span>
+              <FooterText>
+                {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+                <FooterLink onClick={toggleMode}>
+                  {mode === 'login' ? 'Sign up' : 'Sign in'}
+                </FooterLink>
+              </FooterText>
             </Footer>
           </ModalContainer>
         </>

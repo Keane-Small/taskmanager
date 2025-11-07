@@ -127,7 +127,7 @@ const Login = () => {
               <input type="checkbox" />
               <span>Remember me</span>
             </label>
-            <a href="#forgot" className="forgot-link">Forgot password?</a>
+            <Link to="/forgot-password-otp" className="forgot-link">Forgot password?</Link>
           </div>
 
           <button type="submit" className="btn-submit">

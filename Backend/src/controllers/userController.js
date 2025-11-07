@@ -264,7 +264,161 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Forgot Password
+// Generate 6-digit OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Send Password Reset OTP
+exports.sendPasswordResetOTP = async (req, res) => {
+  try {
+    const { email, skipEmail = false } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email address' });
+    }
+
+    // Generate 6-digit OTP
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + 600000; // 10 minutes from now
+
+    // Save OTP to user
+    user.resetOTP = otp;
+    user.resetOTPExpires = otpExpiry;
+    await user.save();
+
+    // For testing: log OTP to console
+    console.log(`🔐 Password Reset OTP for ${email}: ${otp}`);
+    
+    // If skipEmail is true, return OTP for frontend to handle email sending
+    if (skipEmail) {
+      return res.json({
+        message: 'OTP generated successfully',
+        email: email,
+        otp: otp, // Return OTP for EmailJS
+        userName: user.name
+      });
+    }
+
+    // Original email sending logic for backward compatibility
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'your-email@gmail.com',
+      to: email,
+      subject: 'TaskFlow - Password Reset OTP',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #2D5A3D; text-align: center;">Password Reset OTP</h2>
+          <p>You requested a password reset for your TaskFlow account.</p>
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+            <p style="margin: 0; font-size: 14px; color: #666;">Your One-Time Password (OTP) is:</p>
+            <h1 style="color: #2D5A3D; font-size: 36px; margin: 10px 0; letter-spacing: 8px; font-family: monospace;">${otp}</h1>
+          </div>
+          <p><strong>This OTP will expire in 10 minutes.</strong></p>
+          <p>If you didn't request this password reset, please ignore this email and your password will remain unchanged.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px; text-align: center;">TaskFlow Team</p>
+        </div>
+      `
+    };
+    
+    try {
+      // Send email
+      await transporter.sendMail(mailOptions);
+      console.log('📧 OTP email sent successfully');
+    } catch (emailError) {
+      console.error('📧 Email sending failed:', emailError.message);
+      console.log('💡 Using console OTP for testing');
+    }
+
+    res.json({ 
+      message: 'Password reset OTP sent to your email address. For testing, check server console.',
+      email: email
+    });
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Verify OTP
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required' });
+    }
+
+    // Find user with valid OTP
+    const user = await User.findOne({
+      email: email,
+      resetOTP: otp,
+      resetOTPExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    res.json({ 
+      message: 'OTP verified successfully',
+      email: email,
+      verified: true
+    });
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Reset Password with OTP
+exports.resetPasswordWithOTP = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
+
+    // Find user with valid OTP
+    const user = await User.findOne({
+      email: email,
+      resetOTP: otp,
+      resetOTPExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update user password and clear OTP
+    user.password = hashedPassword;
+    user.resetOTP = undefined;
+    user.resetOTPExpires = undefined;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error('Error resetting password with OTP:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Legacy Forgot Password (keep for backward compatibility)
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -321,7 +475,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// Reset Password
+// Legacy Reset Password
 exports.resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
