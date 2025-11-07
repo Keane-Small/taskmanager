@@ -15,170 +15,296 @@ const ContentBox = styled.div`
   top: 95px;
   right: 20px;
   bottom: 15px;
-  background: linear-gradient(135deg, #4A56E2 0%, #7C3AED 50%, #9333EA 100%);
-  border-radius: 20px;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 20px rgba(45, 90, 61, 0.08);
+
+  @media (max-width: 768px) {
+    position: static;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    margin: 20px;
+    min-height: calc(100vh - 140px);
+  }
 `;
 
 const ProjectHeader = styled.div`
-  padding: 16px 32px;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #f0f9f3 0%, #e8f5ea 100%);
+  color: #1a4d2a;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 3px solid #2D5A3D;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(45, 90, 61, 0.05);
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 150px;
+    height: 150px;
+    background: rgba(45, 90, 61, 0.03);
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
 `;
 
 const TopRow = styled.div`
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
 `;
 
 const Breadcrumb = styled.div`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+  color: rgba(26, 77, 42, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 `;
 
-const ProjectTitle = styled.div`
+const ProjectTitle = styled.h1`
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a4d2a;
   display: flex;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const ChangeButton = styled.button`
-  padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(45, 90, 61, 0.1);
+  color: #1a4d2a;
+  border: 1px solid rgba(45, 90, 61, 0.3);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(10px);
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(45, 90, 61, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 90, 61, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
   }
 `;
 
 const ProjectMetadata = styled.div`
+  position: relative;
+  z-index: 2;
   display: grid;
-  grid-template-columns: auto auto auto auto;
-  gap: 32px;
-  margin-bottom: 24px;
-  color: white;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  color: #1a4d2a;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 `;
 
 const MetadataItem = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(45, 90, 61, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(45, 90, 61, 0.2);
 `;
 
 const MetadataLabel = styled.div`
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  color: rgba(26, 77, 42, 0.7);
+  font-weight: 500;
 `;
 
 const MetadataValue = styled.div`
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #1a4d2a;
 `;
 
 const Tag = styled.span`
-  padding: 6px 14px;
+  padding: 0.5rem 1rem;
   background: ${props => props.$color || 'rgba(255, 255, 255, 0.2)'};
   color: ${props => props.$textColor || '#000'};
-  border-radius: 8px;
-  font-size: 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `;
 
 const MembersRow = styled.div`
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 1rem;
+  background: rgba(45, 90, 61, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(45, 90, 61, 0.2);
 `;
 
 const MembersLabel = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  color: white;
-  font-size: 14px;
+  color: #1a4d2a;
+  font-size: 1rem;
+  font-weight: 600;
 `;
 
 const InviteButton = styled.button`
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(45, 90, 61, 0.1);
+  color: #1a4d2a;
+  border: 1px solid rgba(45, 90, 61, 0.3);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(10px);
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(45, 90, 61, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 90, 61, 0.2);
   }
 `;
 
 const KanbanContainer = styled.div`
   flex: 1;
-  background: #1a1a1a;
-  padding: 24px;
+  background: #ffffff;
+  padding: 2rem;
   overflow: auto;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const KanbanToolbar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(45, 90, 61, 0.1);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
 `;
 
 const TaskCount = styled.div`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
+  color: #6b7280;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   gap: 12px;
+  font-weight: 500;
 `;
 
 const AddNewButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: #4A56E2;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.3);
 
   &:hover {
-    background: #3A46D2;
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #1F3E2A 0%, #2D5A3D 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(45, 90, 61, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const ToolbarRight = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 `;
 
 const SearchBar = styled.div`
@@ -188,16 +314,23 @@ const SearchBar = styled.div`
 `;
 
 const SearchInput = styled.input`
-  padding: 8px 12px 8px 36px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: white;
-  font-size: 13px;
-  width: 200px;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  color: #374151;
+  font-size: 0.95rem;
+  width: 250px;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #2D5A3D;
+    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+  }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: #9ca3af;
   }
 
   &:focus {
@@ -233,142 +366,176 @@ const IconButton = styled.button`
 
 const KanbanBoard = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 1.5rem;
   flex: 1;
   overflow-x: auto;
-  padding-bottom: 16px;
+  padding-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+  }
 `;
 
 const Column = styled.div`
   min-width: 320px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  padding: 16px;
+  background: #f9fafb;
+  border: 1px solid rgba(45, 90, 61, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(45, 90, 61, 0.1);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    min-width: 280px;
+    padding: 1rem;
+  }
 `;
 
 const ColumnHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(45, 90, 61, 0.1);
 `;
 
 const ColumnTitle = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
+  gap: 0.75rem;
+  color: #2D5A3D;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `;
 
 const TaskCounter = styled.span`
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 12px;
+  background: rgba(45, 90, 61, 0.1);
+  color: #2D5A3D;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
 `;
 
 const ColumnActions = styled.div`
   display: flex;
-  gap: 4px;
+  gap: 0.5rem;
 `;
 
 const SmallIconButton = styled.button`
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(45, 90, 61, 0.2);
+  color: #6b7280;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: rgba(45, 90, 61, 0.1);
+    color: #2D5A3D;
+    border-color: #2D5A3D;
+    transform: scale(1.05);
   }
 `;
 
 const TasksList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1rem;
   overflow-y: auto;
   max-height: calc(100vh - 400px);
-  padding-right: 4px;
+  padding-right: 0.5rem;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
+    background: #f3f4f6;
+    border-radius: 12px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    background: rgba(45, 90, 61, 0.3);
+    border-radius: 12px;
+    
+    &:hover {
+      background: rgba(45, 90, 61, 0.5);
+    }
   }
 `;
 
 const TaskCard = styled(motion.div)`
-  background: ${props => props.$bgColor || '#A0E7C5'};
+  background: #ffffff;
+  border: 1px solid rgba(45, 90, 61, 0.1);
   border-radius: 12px;
-  padding: 16px;
+  padding: 1.25rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(45, 90, 61, 0.05);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(45, 90, 61, 0.15);
+    border-color: rgba(45, 90, 61, 0.2);
   }
 `;
 
 const TaskDate = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 12px;
-  margin-bottom: 8px;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
 `;
 
 const TaskTitle = styled.div`
-  color: #1a1a1a;
-  font-size: 14px;
+  color: #2D5A3D;
+  font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
+  line-height: 1.4;
 `;
 
 const TaskFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 12px;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(45, 90, 61, 0.1);
 `;
 
 const PriorityBadge = styled.span`
-  padding: 4px 10px;
+  padding: 0.375rem 0.875rem;
   background: ${props => {
     switch(props.$priority) {
-      case 'high': return '#FF6B6B';
-      case 'medium': return '#FFA726';
-      case 'low': return '#66BB6A';
-      default: return '#9E9E9E';
+      case 'high': return 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+      case 'medium': return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+      case 'low': return 'linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%)';
+      default: return 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
     }
   }};
   color: white;
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
 `;
@@ -382,7 +549,7 @@ const TaskAvatar = styled.div`
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4A56E2 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -390,7 +557,7 @@ const TaskAvatar = styled.div`
   font-size: 11px;
   font-weight: 600;
   margin-left: -8px;
-  border: 2px solid ${props => props.$borderColor || '#A0E7C5'};
+  border: 2px solid ${props => props.$borderColor || '#ffffff'};
 
   &:first-child {
     margin-left: 0;
@@ -408,7 +575,7 @@ const ProgressBar = styled.div`
 
 const ProgressFill = styled.div`
   height: 100%;
-  background: linear-gradient(135deg, #4A56E2 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
   border-radius: 3px;
   width: ${props => props.$progress || 0}%;
   transition: width 0.3s ease;
@@ -416,7 +583,7 @@ const ProgressFill = styled.div`
 
 const EmptyColumn = styled.div`
   text-align: center;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(45, 90, 61, 0.5);
   font-size: 14px;
   padding: 40px 20px;
 `;
@@ -984,7 +1151,7 @@ const ProjectsPage = () => {
     <ContentBox>
       <ProjectHeader style={{ marginBottom: '24px' }}>
         <TopRow>
-          <div style={{ color: 'white', fontSize: '24px', fontWeight: '600' }}>All Projects</div>
+          <div style={{ color: '#1a4d2a', fontSize: '24px', fontWeight: '600' }}>All Projects</div>
           <AddNewButton onClick={handleAddProject}>
             <FiPlus size={16} />
             Create Project
@@ -1018,8 +1185,8 @@ const ProjectsPage = () => {
             height: '60vh',
             gap: '20px'
           }}>
-            <h2 style={{ color: 'rgba(255, 255, 255, 0.8)' }}>No Projects Yet</h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Create your first project to get started</p>
+            <h2 style={{ color: '#2D5A3D', fontWeight: '600' }}>No Projects Yet</h2>
+            <p style={{ color: '#6b7280' }}>Create your first project to get started</p>
             <AddNewButton onClick={handleAddProject}>
               <FiPlus size={18} />
               Create New Project
