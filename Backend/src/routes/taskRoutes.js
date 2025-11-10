@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 
 // All routes require authentication
 router.post('/', auth, controller.createTask);
+router.get('/urgent', auth, controller.getUrgentTasks);
 router.get('/project/:projectId', auth, controller.getTasksForProject);
 router.get('/project/:projectId/stats', auth, controller.getTaskStats);
 router.get('/:id', auth, controller.getTaskById);

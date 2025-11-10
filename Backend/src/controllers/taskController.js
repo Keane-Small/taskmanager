@@ -67,6 +67,35 @@ exports.getTasksForProject = async (req, res) => {
   }
 };
 
+// Get urgent tasks (high priority or due soon, excluding completed)
+exports.getUrgentTasks = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const now = new Date();
+    const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+    // Find tasks that are:
+    // 1. High priority OR due within 3 days
+    // 2. Not completed or archived
+    // 3. Belong to user's projects
+    const tasks = await Task.find({
+      userId,
+      status: { $nin: ['completed', 'archived'] },
+      $or: [
+        { priority: 'high' },
+        { dueDate: { $lte: threeDaysFromNow, $gte: now } }
+      ]
+    })
+    .populate('projectId', 'name')
+    .sort({ dueDate: 1, priority: -1 })
+    .limit(10);
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 // Get single task by ID
 exports.getTaskById = async (req, res) => {
   try {

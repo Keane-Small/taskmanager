@@ -9,10 +9,10 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const PageContainer = styled.div`
   position: fixed;
-  left: 100px;
-  top: 95px;
+  left: 110px;
+  top: 20px;
   right: 20px;
-  bottom: 15px;
+  bottom: 20px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -764,14 +764,7 @@ const MessagesPage = () => {
     <PageContainer>
       <Sidebar>
         <SidebarHeader>
-          <TitleRow>
-            <Title>Messages</Title>
-            <NewMessageButton onClick={() => setShowNewMessageModal(true)}>
-              <FiPlus size={16} />
-              New
-            </NewMessageButton>
-          </TitleRow>
-          <SearchContainer>
+          <SearchContainer style={{ marginBottom: '16px' }}>
             <SearchIcon />
             <SearchInput
               placeholder="Search conversations..."
@@ -779,6 +772,10 @@ const MessagesPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </SearchContainer>
+          <NewMessageButton onClick={() => setShowNewMessageModal(true)} style={{ width: '100%' }}>
+            <FiPlus size={16} />
+            New Message
+          </NewMessageButton>
         </SidebarHeader>
         <TabContainer>
           <Tab

@@ -8,14 +8,15 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const ContentBox = styled.div`
   position: fixed;
-  left: 100px;
-  top: 95px;
+  left: 110px;
+  top: 20px;
   right: 20px;
-  bottom: 15px;
+  bottom: 20px;
   background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
   border-radius: 16px;
   overflow-y: auto;
   padding: 0;
+  box-shadow: 0 4px 20px rgba(45, 90, 61, 0.08);
 
   @media (max-width: 768px) {
     position: static;

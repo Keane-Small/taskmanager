@@ -205,25 +205,29 @@ const AppContent = () => {
     }
   };
 
+  const showTopBar = activeNavItemId === 'home';
+
   return (
     <div className="main-app">
       <VerticalNavBar />
       <div className="app-content">
-        <div className="top-bar">
-          <div className="user-info">
-            <span className="welcome-text">Welcome, {user?.name || user?.email || 'User'}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <NotificationCenter />
-            <div className="user-profile">
-              {user?.profilePicture ? (
-                <UserProfileImage src={user.profilePicture} alt="Profile" />
-              ) : (
-                <UserProfileInitials>{getUserInitials(user?.name)}</UserProfileInitials>
-              )}
+        {showTopBar && (
+          <div className="top-bar">
+            <div className="user-info">
+              <span className="welcome-text">Welcome, {user?.name || user?.email || 'User'}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <NotificationCenter />
+              <div className="user-profile">
+                {user?.profilePicture ? (
+                  <UserProfileImage src={user.profilePicture} alt="Profile" />
+                ) : (
+                  <UserProfileInitials>{getUserInitials(user?.name)}</UserProfileInitials>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="content-area">
           {renderContent()}
         </div>

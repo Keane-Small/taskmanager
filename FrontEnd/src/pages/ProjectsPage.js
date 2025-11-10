@@ -11,10 +11,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const ContentBox = styled.div`
   position: fixed;
-  left: 100px;
-  top: 95px;
+  left: 110px;
+  top: 20px;
   right: 20px;
-  bottom: 15px;
+  bottom: 20px;
   background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
   border-radius: 16px;
   overflow: hidden;
@@ -848,28 +848,38 @@ const ProjectsPage = () => {
 
     return (
       <ContentBox>
-        <ProjectHeader>
-          <TopRow>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          padding: '24px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          marginBottom: '24px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Breadcrumb>
-              <span onClick={() => setSelectedProject(null)} style={{ cursor: 'pointer' }}>Projects</span>
-              <span style={{ margin: '0 8px', color: 'rgba(255, 255, 255, 0.5)' }}>/</span>
-              <span>{selectedProject.name}</span>
+              <span onClick={() => setSelectedProject(null)} style={{ cursor: 'pointer', color: 'rgba(255, 255, 255, 0.6)' }}>Projects</span>
+              <span style={{ margin: '0 8px', color: 'rgba(255, 255, 255, 0.4)' }}>/</span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.95)' }}>{selectedProject.name}</span>
             </Breadcrumb>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <ChangeButton 
-                onClick={() => handleDeleteProject(selectedProject._id, selectedProject.name)}
-                style={{ backgroundColor: '#dc2626', border: '1px solid #dc2626' }}
-              >
-                <FiTrash2 size={14} style={{ marginRight: '4px' }} />
-                Delete
-              </ChangeButton>
-              <ChangeButton onClick={() => setSelectedProject(null)}>
-                <FiArrowLeft size={14} style={{ marginRight: '4px' }} />
-                Back
-              </ChangeButton>
-            </div>
-          </TopRow>
-          <ProjectTitle>{selectedProject.name}</ProjectTitle>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <ChangeButton 
+              onClick={() => handleDeleteProject(selectedProject._id, selectedProject.name)}
+              style={{ backgroundColor: '#dc2626', border: '1px solid #dc2626' }}
+            >
+              <FiTrash2 size={14} style={{ marginRight: '4px' }} />
+              Delete
+            </ChangeButton>
+            <ChangeButton onClick={() => setSelectedProject(null)}>
+              <FiArrowLeft size={14} style={{ marginRight: '4px' }} />
+              Back
+            </ChangeButton>
+          </div>
+        </div>
+        
+        <div style={{ padding: '0 24px 24px' }}>
+          <ProjectTitle style={{ marginBottom: '16px' }}>{selectedProject.name}</ProjectTitle>
           
           <ProjectMetadata>
             <MetadataItem>
@@ -938,7 +948,7 @@ const ProjectsPage = () => {
               Invite
             </InviteButton>
           </MembersRow>
-        </ProjectHeader>
+        </div>
 
         <KanbanContainer>
           <KanbanToolbar>
@@ -1175,15 +1185,19 @@ const ProjectsPage = () => {
   // Show project list when no project is selected
   return (
     <ContentBox>
-      <ProjectHeader style={{ marginBottom: '24px' }}>
-        <TopRow>
-          <div style={{ color: '#1a4d2a', fontSize: '24px', fontWeight: '600' }}>All Projects</div>
-          <AddNewButton onClick={handleAddProject}>
-            <FiPlus size={16} />
-            Create Project
-          </AddNewButton>
-        </TopRow>
-      </ProjectHeader>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '24px',
+        marginBottom: '16px'
+      }}>
+        <div style={{ fontSize: '24px', fontWeight: '700', color: 'rgba(255, 255, 255, 0.95)' }}>All Projects</div>
+        <AddNewButton onClick={handleAddProject}>
+          <FiPlus size={16} />
+          Create Project
+        </AddNewButton>
+      </div>
 
       <AddProjectModal 
         isOpen={isModalOpen}

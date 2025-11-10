@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiArrowRight, FiMoreVertical, FiUsers, FiTrendingUp, FiClock } from 'react-icons/fi';
+import { FiArrowRight, FiMoreVertical, FiUsers, FiTrendingUp, FiClock, FiCalendar } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const DashboardContainer = styled.div`
   position: fixed;
@@ -9,24 +12,29 @@ const DashboardContainer = styled.div`
   top: 95px;
   right: 20px;
   bottom: 15px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
   border-radius: 20px;
   padding: 30px;
   overflow-y: auto;
-  color: white;
+  color: #1f2937;
+  box-shadow: 0 4px 20px rgba(45, 90, 61, 0.08);
 
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f3f4f6;
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(45, 90, 61, 0.3);
     border-radius: 4px;
+    
+    &:hover {
+      background: rgba(45, 90, 61, 0.5);
+    }
   }
 `;
 
@@ -64,13 +72,13 @@ const SectionTitle = styled.h2`
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: #2D5A3D;
 `;
 
 const ViewAll = styled.button`
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6b7280;
   cursor: pointer;
   font-size: 14px;
   display: flex;
@@ -79,15 +87,16 @@ const ViewAll = styled.button`
   transition: color 0.2s;
 
   &:hover {
-    color: white;
+    color: #2D5A3D;
   }
 `;
 
 const UrgentTasksContainer = styled.div`
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   border-radius: 16px;
   padding: 20px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.08);
+  border: 1px solid rgba(45, 90, 61, 0.1);
 `;
 
 const TaskCard = styled(motion.div)`
@@ -195,32 +204,45 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   border-radius: 16px;
   padding: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.08);
+  border: 1px solid rgba(45, 90, 61, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(45, 90, 61, 0.12);
+    transform: translateY(-2px);
+  }
 `;
 
 const StatValue = styled.div`
   font-size: 32px;
   font-weight: 700;
-  color: white;
+  color: #2D5A3D;
   margin-bottom: 4px;
 `;
 
 const StatLabel = styled.div`
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
 const TaskStatistics = styled.div`
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.08);
+  border: 1px solid rgba(45, 90, 61, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(45, 90, 61, 0.12);
+    transform: translateY(-2px);
+  }
 `;
 
 const DonutContainer = styled.div`
@@ -252,12 +274,12 @@ const DonutCenter = styled.div`
 const DonutValue = styled.div`
   font-size: 36px;
   font-weight: 700;
-  color: white;
+  color: #2D5A3D;
 `;
 
 const DonutLabel = styled.div`
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6b7280;
 `;
 
 const StatsList = styled.div`
@@ -274,13 +296,13 @@ const StatItem = styled.div`
 const StatItemValue = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: white;
+  color: #2D5A3D;
   margin-bottom: 4px;
 `;
 
 const StatItemLabel = styled.div`
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
+  color: #6b7280;
   text-transform: uppercase;
 `;
 
@@ -310,46 +332,151 @@ const Avatar = styled.div`
 `;
 
 const DashboardPage = () => {
-  const urgentTasks = [
-    {
-      time: '9:00 - 13:00',
-      title: 'Design System',
-      members: 3,
-      status: 'In progress',
-      progress: 67,
-      color: 'linear-gradient(135deg, #ff8a80 0%, #ff6e65 100%)',
-      textColor: '#000',
-      statusColor: '#000',
-    },
-    {
-      time: '14:30 - 18:00',
-      title: 'Designers Meeting',
-      members: 5,
-      description: 'A weekly call with the team\'s designers',
-      color: 'linear-gradient(135deg, #b388ff 0%, #9575cd 100%)',
-      textColor: '#fff',
-      statusColor: '#fff',
-    },
-    {
-      time: '17:00 - 19:00',
-      title: 'Make Report',
-      revenue: '$28,430.60',
-      people: 19,
-      tasks: 81,
-      color: 'linear-gradient(135deg, #80deea 0%, #4dd0e1 100%)',
-      textColor: '#000',
-      statusColor: '#000',
-    },
-    {
-      time: '18:20 - 19:16',
-      title: 'Load Planning',
-      members: 2,
-      status: 'All with link',
-      color: 'linear-gradient(135deg, #69f0ae 0%, #00e676 100%)',
-      textColor: '#000',
-      statusColor: '#000',
+  const { user } = useAuth();
+  const [urgentTasks, setUrgentTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [taskStats, setTaskStats] = useState({
+    total: 0,
+    completed: 0,
+    inProgress: 0,
+    backlog: 0
+  });
+
+  useEffect(() => {
+    fetchUrgentTasks();
+    fetchAllTaskStats();
+  }, []);
+
+  const fetchUrgentTasks = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/tasks/urgent`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUrgentTasks(data);
+      } else {
+        setUrgentTasks([]);
+      }
+    } catch (error) {
+      console.error('Error fetching urgent tasks:', error);
+      setUrgentTasks([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const fetchAllTaskStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Get all projects first
+      const projectsResponse = await fetch(`${API_URL}/projects`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!projectsResponse.ok) return;
+      
+      const projects = await projectsResponse.json();
+      
+      // Aggregate stats from all projects
+      let totalTasks = 0;
+      let completedTasks = 0;
+      let inProgressTasks = 0;
+      let backlogTasks = 0;
+
+      for (const project of projects) {
+        totalTasks += project.totalTasks || 0;
+        completedTasks += project.completedTasks || 0;
+      }
+
+      // Get detailed task counts
+      const tasksPromises = projects.map(p => 
+        fetch(`${API_URL}/tasks/project/${p._id}/stats`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(r => r.ok ? r.json() : null)
+      );
+
+      const tasksData = await Promise.all(tasksPromises);
+      tasksData.forEach(data => {
+        if (data) {
+          inProgressTasks += data.inProgress || 0;
+          backlogTasks += data.todo || 0;
+        }
+      });
+
+      setTaskStats({
+        total: totalTasks,
+        completed: completedTasks,
+        inProgress: inProgressTasks,
+        backlog: backlogTasks
+      });
+    } catch (error) {
+      console.error('Error fetching task stats:', error);
+    }
+  };
+
+  const getTaskColor = (priority, index) => {
+    const colorMap = {
+      high: 'linear-gradient(135deg, #ff8a80 0%, #ff6e65 100%)',
+      medium: 'linear-gradient(135deg, #ffd180 0%, #ffab40 100%)',
+      low: 'linear-gradient(135deg, #80deea 0%, #4dd0e1 100%)'
+    };
+    
+    const fallbackColors = [
+      'linear-gradient(135deg, #b388ff 0%, #9575cd 100%)',
+      'linear-gradient(135deg, #69f0ae 0%, #00e676 100%)',
+      'linear-gradient(135deg, #ff8a80 0%, #ff6e65 100%)',
+      'linear-gradient(135deg, #80deea 0%, #4dd0e1 100%)',
+    ];
+    
+    return colorMap[priority] || fallbackColors[index % fallbackColors.length];
+  };
+
+  const getTextColor = (priority) => {
+    return priority === 'high' ? '#fff' : '#000';
+  };
+
+  const formatDate = (date) => {
+    if (!date) return 'No due date';
+    const taskDate = new Date(date);
+    const now = new Date();
+    const diffTime = taskDate - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'Overdue';
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays <= 7) return `${diffDays} days`;
+    
+    return taskDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const formatTimeRange = (dueDate) => {
+    if (!dueDate) return 'No deadline';
+    const date = new Date(dueDate);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  };
+
+  const getCompletionPercentage = () => {
+    if (taskStats.total === 0) return 0;
+    return Math.round((taskStats.completed / taskStats.total) * 100);
+  };
+
+  const getIncompletePercentage = () => {
+    if (taskStats.total === 0) return 0;
+    return Math.round(((taskStats.total - taskStats.completed) / taskStats.total) * 100);
+  };
 
   return (
     <DashboardContainer>
@@ -357,16 +484,16 @@ const DashboardPage = () => {
         <LeftColumn>
           <StatsGrid>
             <StatCard>
-              <StatValue>75%</StatValue>
+              <StatValue>{getCompletionPercentage()}%</StatValue>
               <StatLabel>Completed Tasks</StatLabel>
             </StatCard>
             <StatCard>
-              <StatValue>25%</StatValue>
+              <StatValue>{getIncompletePercentage()}%</StatValue>
               <StatLabel>Unfinished Tasks</StatLabel>
             </StatCard>
             <StatCard>
-              <StatValue>32</StatValue>
-              <StatLabel>Total Projects</StatLabel>
+              <StatValue>{taskStats.total}</StatValue>
+              <StatLabel>Total Tasks</StatLabel>
             </StatCard>
           </StatsGrid>
 
@@ -380,7 +507,7 @@ const DashboardPage = () => {
                     cy="80"
                     r="60"
                     fill="none"
-                    stroke="rgba(255, 255, 255, 0.1)"
+                    stroke="#e5e7eb"
                     strokeWidth="20"
                   />
                   <circle
@@ -388,14 +515,14 @@ const DashboardPage = () => {
                     cy="80"
                     r="60"
                     fill="none"
-                    stroke="#69f0ae"
+                    stroke="#2D5A3D"
                     strokeWidth="20"
-                    strokeDasharray={`${2 * Math.PI * 60 * 0.75} ${2 * Math.PI * 60}`}
+                    strokeDasharray={`${2 * Math.PI * 60 * (getCompletionPercentage() / 100)} ${2 * Math.PI * 60}`}
                     strokeLinecap="round"
                   />
                 </DonutCircle>
                 <DonutCenter>
-                  <DonutValue>75%</DonutValue>
+                  <DonutValue>{getCompletionPercentage()}%</DonutValue>
                   <DonutLabel>Complete</DonutLabel>
                 </DonutCenter>
               </DonutChart>
@@ -407,7 +534,7 @@ const DashboardPage = () => {
                       cy="60"
                       r="45"
                       fill="none"
-                      stroke="rgba(255, 255, 255, 0.1)"
+                      stroke="#e5e7eb"
                       strokeWidth="15"
                     />
                     <circle
@@ -417,12 +544,12 @@ const DashboardPage = () => {
                       fill="none"
                       stroke="#ff8a80"
                       strokeWidth="15"
-                      strokeDasharray={`${2 * Math.PI * 45 * 0.25} ${2 * Math.PI * 45}`}
+                      strokeDasharray={`${2 * Math.PI * 45 * (getIncompletePercentage() / 100)} ${2 * Math.PI * 45}`}
                       strokeLinecap="round"
                     />
                   </DonutCircle>
                   <DonutCenter>
-                    <DonutValue style={{ fontSize: '28px' }}>25%</DonutValue>
+                    <DonutValue style={{ fontSize: '28px' }}>{getIncompletePercentage()}%</DonutValue>
                     <DonutLabel>Incomplete</DonutLabel>
                   </DonutCenter>
                 </DonutChart>
@@ -430,12 +557,12 @@ const DashboardPage = () => {
             </DonutContainer>
             <StatsList>
               <StatItem>
-                <StatItemValue>170</StatItemValue>
-                <StatItemLabel>🎨 Design</StatItemLabel>
+                <StatItemValue>{taskStats.inProgress}</StatItemValue>
+                <StatItemLabel>🚀 In Progress</StatItemLabel>
               </StatItem>
               <StatItem>
-                <StatItemValue>87</StatItemValue>
-                <StatItemLabel>💼 Business</StatItemLabel>
+                <StatItemValue>{taskStats.backlog}</StatItemValue>
+                <StatItemLabel>� Backlog</StatItemLabel>
               </StatItem>
             </StatsList>
           </TaskStatistics>
@@ -444,75 +571,92 @@ const DashboardPage = () => {
         <RightColumn>
           <UrgentTasksContainer>
             <SectionHeader>
-              <SectionTitle>Urgent Tasks (5)</SectionTitle>
+              <SectionTitle>Urgent Tasks ({urgentTasks.length})</SectionTitle>
             </SectionHeader>
             
-            {urgentTasks.map((task, index) => (
-              <TaskCard
-                key={index}
-                $color={task.color}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <TaskHeader>
-                  <div>
-                    <TaskTime style={{ color: task.textColor, opacity: 0.7 }}>
-                      ⏱️ {task.time}
-                    </TaskTime>
-                    <TaskTitle $textColor={task.textColor}>{task.title}</TaskTitle>
-                    {task.description && (
-                      <p style={{ 
-                        margin: '8px 0 0 0', 
-                        fontSize: '13px', 
-                        color: task.textColor,
-                        opacity: 0.8 
-                      }}>
-                        {task.description}
-                      </p>
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                Loading urgent tasks...
+              </div>
+            ) : urgentTasks.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                <p style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>No urgent tasks</p>
+                <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>You're all caught up! 🎉</p>
+              </div>
+            ) : (
+              urgentTasks.map((task, index) => {
+                const color = getTaskColor(task.priority, index);
+                const textColor = getTextColor(task.priority);
+                
+                return (
+                  <TaskCard
+                    key={task._id}
+                    $color={color}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <TaskHeader>
+                      <div>
+                        <TaskTime style={{ color: textColor, opacity: 0.7 }}>
+                          <FiCalendar size={12} style={{ marginRight: '4px' }} />
+                          Due: {formatDate(task.dueDate)}
+                        </TaskTime>
+                        <TaskTitle $textColor={textColor}>{task.title}</TaskTitle>
+                        {task.description && (
+                          <p style={{ 
+                            margin: '8px 0 0 0', 
+                            fontSize: '13px', 
+                            color: textColor,
+                            opacity: 0.8 
+                          }}>
+                            {task.description}
+                          </p>
+                        )}
+                        {task.projectId && (
+                          <p style={{ 
+                            margin: '4px 0 0 0', 
+                            fontSize: '12px', 
+                            color: textColor,
+                            opacity: 0.7,
+                            fontWeight: 600
+                          }}>
+                            📁 {task.projectId.name || 'Project'}
+                          </p>
+                        )}
+                      </div>
+                      <MoreButton>
+                        <FiMoreVertical size={18} />
+                      </MoreButton>
+                    </TaskHeader>
+
+                    <TaskDetails>
+                      {task.assignedTo && task.assignedTo.length > 0 && (
+                        <TaskMeta $textColor={textColor}>
+                          <FiUsers size={14} />
+                          <span>{task.assignedTo.length} assigned</span>
+                        </TaskMeta>
+                      )}
+                      <StatusBadge $bg="rgba(0,0,0,0.15)" $color={textColor}>
+                        {task.status.replace('-', ' ')}
+                      </StatusBadge>
+                      <StatusBadge 
+                        $bg={task.priority === 'high' ? 'rgba(255,0,0,0.3)' : 'rgba(0,0,0,0.15)'} 
+                        $color={textColor}
+                      >
+                        {task.priority} priority
+                      </StatusBadge>
+                    </TaskDetails>
+
+                    {task.status === 'in-progress' && (
+                      <ProgressBar>
+                        <ProgressFill $progress={50} />
+                      </ProgressBar>
                     )}
-                  </div>
-                  <MoreButton>
-                    <FiMoreVertical size={18} />
-                  </MoreButton>
-                </TaskHeader>
-
-                <TaskDetails>
-                  {task.members !== undefined && (
-                    <TaskMeta $textColor={task.textColor}>
-                      <FiUsers size={14} />
-                      <span>Members: {task.members}</span>
-                    </TaskMeta>
-                  )}
-                  {task.status && (
-                    <StatusBadge $bg="rgba(0,0,0,0.15)" $color={task.statusColor}>
-                      {task.status}
-                    </StatusBadge>
-                  )}
-                  {task.revenue && (
-                    <TaskMeta $textColor={task.textColor}>
-                      💰 {task.revenue}
-                    </TaskMeta>
-                  )}
-                  {task.people !== undefined && (
-                    <TaskMeta $textColor={task.textColor}>
-                      👥 {task.people}
-                    </TaskMeta>
-                  )}
-                  {task.tasks !== undefined && (
-                    <TaskMeta $textColor={task.textColor}>
-                      📋 {task.tasks}
-                    </TaskMeta>
-                  )}
-                </TaskDetails>
-
-                {task.progress !== undefined && (
-                  <ProgressBar>
-                    <ProgressFill $progress={task.progress} />
-                  </ProgressBar>
-                )}
-              </TaskCard>
-            ))}
+                  </TaskCard>
+                );
+              })
+            )}
           </UrgentTasksContainer>
         </RightColumn>
       </DashboardGrid>
