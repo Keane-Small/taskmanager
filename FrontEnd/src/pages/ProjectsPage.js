@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FiPlus, FiMoreHorizontal, FiSearch, FiFilter, FiCalendar, FiArrowLeft, FiArrowRight, FiTrash2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { motion } from 'framer-motion';
 import AddProjectModal from '../components/AddProjectModal';
 import ConfirmModal from '../components/ConfirmModal';
@@ -15,12 +16,13 @@ const ContentBox = styled.div`
   top: 20px;
   right: 20px;
   bottom: 20px;
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  background: ${props => props.$bgColor};
   border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 20px rgba(45, 90, 61, 0.08);
+  box-shadow: 0 4px 20px ${props => props.$shadow};
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 
   @media (max-width: 768px) {
     position: static;
@@ -34,12 +36,13 @@ const ContentBox = styled.div`
 `;
 
 const ProjectHeader = styled.div`
-  background: linear-gradient(135deg, #f0f9f3 0%, #e8f5ea 100%);
-  color: #1a4d2a;
+  background: ${props => props.$bgColor};
+  color: ${props => props.$textColor};
   padding: 2rem;
   position: relative;
   overflow: hidden;
-  border-bottom: 3px solid #2D5A3D;
+  border-bottom: 3px solid ${props => props.$borderColor};
+  transition: all 0.3s ease;
 
   &::before {
     content: '';
@@ -235,11 +238,12 @@ const InviteButton = styled.button`
 
 const KanbanContainer = styled.div`
   flex: 1;
-  background: #ffffff;
+  background: ${props => props.$bgColor};
   padding: 2rem;
   overflow: auto;
   display: flex;
   flex-direction: column;
+  transition: background 0.3s ease;
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -315,10 +319,10 @@ const SearchBar = styled.div`
 
 const SearchInput = styled.input`
   padding: 0.75rem 1rem 0.75rem 2.5rem;
-  background: #ffffff;
-  border: 2px solid #e5e7eb;
+  background: ${props => props.$bgColor};
+  border: 2px solid ${props => props.$borderColor};
   border-radius: 12px;
-  color: #374151;
+  color: ${props => props.$textColor};
   font-size: 0.95rem;
   width: 250px;
   transition: all 0.3s ease;
@@ -378,17 +382,17 @@ const KanbanBoard = styled.div`
 
 const Column = styled.div`
   min-width: 320px;
-  background: #f9fafb;
-  border: 1px solid rgba(45, 90, 61, 0.1);
+  background: ${props => props.$bgColor};
+  border: 1px solid ${props => props.$borderColor};
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 12px rgba(45, 90, 61, 0.05);
+  box-shadow: 0 4px 12px ${props => props.$shadow};
   transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(45, 90, 61, 0.1);
+    box-shadow: 0 8px 24px ${props => props.$shadow};
     transform: translateY(-2px);
   }
 
@@ -481,18 +485,18 @@ const TasksList = styled.div`
 `;
 
 const TaskCard = styled(motion.div)`
-  background: ${props => props.$bgColor || '#ffffff'};
-  border: 1px solid rgba(45, 90, 61, 0.15);
+  background: ${props => props.$cardBgColor};
+  border: 1px solid ${props => props.$borderColor};
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(45, 90, 61, 0.08);
+  box-shadow: 0 2px 8px ${props => props.$shadow};
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(45, 90, 61, 0.15);
-    border-color: rgba(45, 90, 61, 0.25);
+    box-shadow: 0 8px 24px ${props => props.$shadow};
+    border-color: ${props => props.$borderColor};
   }
 `;
 
@@ -592,6 +596,7 @@ const EmptyColumn = styled.div`
 
 const ProjectsPage = () => {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [projectList, setProjectList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -831,9 +836,9 @@ const ProjectsPage = () => {
 
   if (loading) {
     return (
-      <ContentBox>
+      <ContentBox $bgColor={theme.colors.cardBg} $shadow={theme.colors.shadow}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <p>Loading...</p>
+          <p style={{ color: theme.colors.textPrimary }}>Loading...</p>
         </div>
       </ContentBox>
     );
@@ -847,7 +852,7 @@ const ProjectsPage = () => {
     const archivedTasks = getTasksByStatus('archived');
 
     return (
-      <ContentBox>
+      <ContentBox $bgColor={theme.colors.cardBg} $shadow={theme.colors.shadow}>
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
@@ -950,7 +955,7 @@ const ProjectsPage = () => {
           </MembersRow>
         </div>
 
-        <KanbanContainer>
+        <KanbanContainer $bgColor={theme.colors.secondary}>
           <KanbanToolbar>
             <TaskCount>
               <span>All Tasks: {tasks.length}</span>
@@ -963,6 +968,9 @@ const ProjectsPage = () => {
                   placeholder="Type to search..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  $bgColor={theme.colors.cardBg}
+                  $borderColor={theme.colors.border}
+                  $textColor={theme.colors.textPrimary}
                 />
               </SearchBar>
               <IconButton>
@@ -982,7 +990,11 @@ const ProjectsPage = () => {
 
           <KanbanBoard>
             {/* BACKLOG Column */}
-            <Column>
+            <Column 
+              $bgColor={theme.colors.cardBg}
+              $borderColor={theme.colors.border}
+              $shadow={theme.colors.shadow}
+            >
               <ColumnHeader>
                 <ColumnTitle>
                   BACKLOG <TaskCounter>{backlogTasks.length}</TaskCounter>
@@ -996,7 +1008,9 @@ const ProjectsPage = () => {
                 {backlogTasks.length > 0 ? backlogTasks.map((task, index) => (
                   <TaskCard
                     key={task._id}
-                    $bgColor={getTaskColor(selectedProject, index)}
+                    $cardBgColor={getTaskColor(selectedProject, index)}
+                    $borderColor={theme.colors.border}
+                    $shadow={theme.colors.shadow}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
@@ -1029,7 +1043,11 @@ const ProjectsPage = () => {
             </Column>
 
             {/* IN PROGRESS Column */}
-            <Column>
+            <Column
+              $bgColor={theme.colors.cardBg}
+              $borderColor={theme.colors.border}
+              $shadow={theme.colors.shadow}
+            >
               <ColumnHeader>
                 <ColumnTitle>
                   IN PROGRESS <TaskCounter>{inProgressTasks.length}</TaskCounter>
@@ -1074,7 +1092,11 @@ const ProjectsPage = () => {
             </Column>
 
             {/* DONE Column */}
-            <Column>
+            <Column
+              $bgColor={theme.colors.cardBg}
+              $borderColor={theme.colors.border}
+              $shadow={theme.colors.shadow}
+            >
               <ColumnHeader>
                 <ColumnTitle>
                   DONE <TaskCounter>{doneTasks.length}</TaskCounter>
@@ -1119,7 +1141,11 @@ const ProjectsPage = () => {
             </Column>
 
             {/* ARCHIVED Column */}
-            <Column>
+            <Column
+              $bgColor={theme.colors.cardBg}
+              $borderColor={theme.colors.border}
+              $shadow={theme.colors.shadow}
+            >
               <ColumnHeader>
                 <ColumnTitle>
                   ARCHIVED <TaskCounter>{archivedTasks.length}</TaskCounter>
@@ -1184,7 +1210,7 @@ const ProjectsPage = () => {
 
   // Show project list when no project is selected
   return (
-    <ContentBox>
+    <ContentBox $bgColor={theme.colors.cardBg} $shadow={theme.colors.shadow}>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -1192,7 +1218,7 @@ const ProjectsPage = () => {
         padding: '24px',
         marginBottom: '16px'
       }}>
-        <div style={{ fontSize: '24px', fontWeight: '700', color: 'rgba(255, 255, 255, 0.95)' }}>All Projects</div>
+        <div style={{ fontSize: '24px', fontWeight: '700', color: theme.colors.textPrimary }}>All Projects</div>
         <AddNewButton onClick={handleAddProject}>
           <FiPlus size={16} />
           Create Project
@@ -1215,7 +1241,7 @@ const ProjectsPage = () => {
         cancelText="Cancel"
       />
 
-      <KanbanContainer>
+      <KanbanContainer $bgColor={theme.colors.secondary}>
         {projectList.length === 0 ? (
           <div style={{ 
             display: 'flex', 
@@ -1225,8 +1251,8 @@ const ProjectsPage = () => {
             height: '60vh',
             gap: '20px'
           }}>
-            <h2 style={{ color: '#2D5A3D', fontWeight: '600' }}>No Projects Yet</h2>
-            <p style={{ color: '#6b7280' }}>Create your first project to get started</p>
+            <h2 style={{ color: theme.colors.textSecondary, fontWeight: '600' }}>No Projects Yet</h2>
+            <p style={{ color: theme.colors.textTertiary }}>Create your first project to get started</p>
             <AddNewButton onClick={handleAddProject}>
               <FiPlus size={18} />
               Create New Project
@@ -1237,7 +1263,9 @@ const ProjectsPage = () => {
             {projectList.map((project, index) => (
               <TaskCard
                 key={project._id || project.id}
-                $bgColor={getTaskColor(index)}
+                $cardBgColor={getTaskColor(index)}
+                $borderColor={theme.colors.border}
+                $shadow={theme.colors.shadow}
                 onClick={() => handleOpenProject(project)}
                 initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

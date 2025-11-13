@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext';
 
 const ActiveBackground = styled(motion.div)`
   position: absolute;
@@ -8,7 +9,7 @@ const ActiveBackground = styled(motion.div)`
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #235347 0%, #163832 100%);
+  background: ${props => props.$gradient};
   border-radius: 12px;
   z-index: 0;
 `;
@@ -20,7 +21,7 @@ const IconWrapper = styled(motion.div)`
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  color: ${props => props.$isActive ? '#FFFFFF' : '#163832'};
+  color: ${props => props.$color};
   transition: color 0.3s ease-in-out;
 `;
 
@@ -39,15 +40,15 @@ const ItemContainer = styled(motion.button)`
   border-radius: 12px;
   
   &:hover {
-    background-color: ${props => props.$isActive ? 'transparent' : 'rgba(142, 182, 155, 0.2)'};
+    background-color: ${props => props.$hoverBg};
   }
   
   &:hover ${IconWrapper} {
-    color: ${props => props.$isActive ? '#FFFFFF' : '#0B2B26'};
+    color: ${props => props.$hoverColor};
   }
   
   &:focus {
-    outline: 2px solid #235347;
+    outline: 2px solid ${props => props.$focusColor};
     outline-offset: 2px;
   }
 `;
@@ -70,6 +71,8 @@ const NotificationBadge = styled(motion.div)`
 `;
 
 const NavItem = ({ icon: Icon, notificationCount, isActive, onClick, ariaLabel }) => {
+  const { theme } = useTheme();
+  
   return (
     <ItemContainer
       onClick={onClick}
@@ -79,10 +82,14 @@ const NavItem = ({ icon: Icon, notificationCount, isActive, onClick, ariaLabel }
       aria-label={ariaLabel}
       aria-current={isActive ? 'page' : undefined}
       $isActive={isActive}
+      $hoverBg={isActive ? 'transparent' : theme.colors.navHover}
+      $hoverColor={isActive ? theme.colors.textLight : theme.colors.textPrimary}
+      $focusColor={theme.colors.accentDark}
     >
       <AnimatePresence>
         {isActive && (
           <ActiveBackground
+            $gradient={theme.colors.navActive}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -91,7 +98,9 @@ const NavItem = ({ icon: Icon, notificationCount, isActive, onClick, ariaLabel }
           />
         )}
       </AnimatePresence>
-      <IconWrapper $isActive={isActive}>
+      <IconWrapper 
+        $color={isActive ? theme.colors.textLight : theme.colors.navInactive}
+      >
         <Icon />
         {notificationCount > 0 && (
           <NotificationBadge

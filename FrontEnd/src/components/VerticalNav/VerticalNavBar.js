@@ -8,6 +8,7 @@ import NavItem from './NavItem';
 
 import { useNav } from '../../context/NavContext';
 import { useMessages } from '../../context/MessageContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
@@ -15,21 +16,42 @@ const NavContainer = styled(motion.nav)`
   top: 10px;
   bottom: 10px;
   width: 70px;
-  background-color: #DAF1DE;
+  background-color: ${props => props.$bgColor};
   border-radius: 20px;
   padding: 16px 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px ${props => props.$shadow};
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 1000;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px ${props => props.$shadow};
   }
 `;
 
+const LogoContainer = styled.div`
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const Logo = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;
 
 
 const MiddleSection = styled.div`
@@ -38,7 +60,7 @@ const MiddleSection = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 8px;
   overflow: visible;
   
   &::-webkit-scrollbar {
@@ -61,6 +83,7 @@ const BottomSection = styled.div`
 const VerticalNavBar = () => {
   const { activeNavItemId, setActiveNavItemId } = useNav();
   const { unreadCount } = useMessages();
+  const { theme } = useTheme();
 
   const navItems = [
     { id: 'home', icon: MdDashboard, label: 'Dashboard', notificationCount: 0 },
@@ -81,10 +104,16 @@ const VerticalNavBar = () => {
 
   return (
     <NavContainer
+      $bgColor={theme.colors.navBg}
+      $shadow={theme.colors.shadow}
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut', type: 'spring', stiffness: 100 }}
     >
+      <LogoContainer>
+        <Logo src="/logo-nav.png" alt="TaskManager Logo" />
+      </LogoContainer>
+      
       <MiddleSection>
         {navItems.map((item) => (
           <NavItem

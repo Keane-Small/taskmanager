@@ -2,7 +2,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FiUser, FiMail, FiLock, FiSave, FiCamera, FiLogOut, FiSettings, FiShield } from "react-icons/fi";
+import { useTheme } from "../context/ThemeContext";
+import { FiUser, FiMail, FiLock, FiSave, FiCamera, FiLogOut, FiSettings, FiShield, FiMoon, FiSun } from "react-icons/fi";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
@@ -469,8 +470,125 @@ const ButtonGroup = styled.div`
   }
 `;
 
+const ThemeToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #2D5A3D;
+    box-shadow: 0 4px 12px rgba(45, 90, 61, 0.1);
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+  }
+`;
+
+const ThemeToggleInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const ThemeIconWrapper = styled.div`
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f0f9f3 0%, #e8f5ea 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2D5A3D;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+
+  ${ThemeToggleContainer}:hover & {
+    background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
+    color: #ffffff;
+  }
+`;
+
+const ThemeToggleText = styled.div`
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 0.25rem 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+  }
+`;
+
+const ToggleSwitchWrapper = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 32px;
+  cursor: pointer;
+`;
+
+const ToggleInput = styled.input`
+  opacity: 0;
+  width: 0;
+  height: 0;
+
+  &:checked + span {
+    background: linear-gradient(135deg, #2D5A3D 0%, #3A6B4D 100%);
+  }
+
+  &:checked + span:before {
+    transform: translateX(28px);
+  }
+
+  &:focus + span {
+    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+  }
+`;
+
+const ToggleSlider = styled.span`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #cbd5e1;
+  border-radius: 32px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:before {
+    content: "";
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const ThemeDescription = styled.p`
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+`;
+
 const SettingsPage = () => {
   const { user, updateUser, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
@@ -893,6 +1011,36 @@ const SettingsPage = () => {
             />
             <InfoText>The date when your account was created</InfoText>
           </FormGroup>
+        </Section>
+
+        <Section>
+          <SectionTitle>
+            {isDarkMode ? <FiMoon /> : <FiSun />}
+            Appearance
+          </SectionTitle>
+          <ThemeDescription>
+            Choose between light and dark mode to personalize your experience. Your preference will be saved automatically.
+          </ThemeDescription>
+          <ThemeToggleContainer>
+            <ThemeToggleInfo>
+              <ThemeIconWrapper>
+                {isDarkMode ? <FiMoon /> : <FiSun />}
+              </ThemeIconWrapper>
+              <ThemeToggleText>
+                <h3>{isDarkMode ? "Dark Mode" : "Light Mode"}</h3>
+                <p>{isDarkMode ? "Dark theme is active" : "Light theme is active"}</p>
+              </ThemeToggleText>
+            </ThemeToggleInfo>
+            <ToggleSwitchWrapper>
+              <ToggleInput 
+                type="checkbox" 
+                checked={isDarkMode}
+                onChange={toggleTheme}
+                aria-label="Toggle dark mode"
+              />
+              <ToggleSlider />
+            </ToggleSwitchWrapper>
+          </ThemeToggleContainer>
         </Section>
 
         <Section>

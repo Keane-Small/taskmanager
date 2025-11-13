@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import VerticalNavBar from '../components/VerticalNav/VerticalNavBar';
 import { NavProvider, useNav } from '../context/NavContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { FiLogOut } from 'react-icons/fi';
 import DashboardPage from './DashboardPage';
@@ -14,12 +15,59 @@ import SproutQuickCapture from '../components/SproutQuickCapture';
 import NotificationCenter from '../components/NotificationCenter';
 import './MainApp.css';
 
+const MainAppContainer = styled.div`
+  background: ${props => props.$bgColor};
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  transition: background-color 0.3s ease;
+`;
+
+const AppContentWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+`;
+
+const TopBar = styled.div`
+  position: fixed;
+  top: 15px;
+  left: 100px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: ${props => props.$bgColor};
+  border-radius: 12px;
+  box-shadow: 0 2px 8px ${props => props.$shadow};
+  z-index: 999;
+  height: 60px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+`;
+
+const WelcomeText = styled.div`
+  color: ${props => props.$textColor};
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
+`;
+
 const UserProfileImage = styled.img`
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #235347;
+  border: 2px solid ${props => props.$borderColor};
+  transition: border-color 0.3s ease;
 `;
 
 const UserProfileInitials = styled.div`
@@ -34,12 +82,14 @@ const UserProfileInitials = styled.div`
   font-weight: 600;
   color: white;
   text-transform: uppercase;
-  border: 2px solid #235347;
+  border: 2px solid ${props => props.$borderColor};
+  transition: border-color 0.3s ease;
 `;
 
 const AppContent = () => {
   const { activeNavItemId } = useNav();
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [projects, setProjects] = React.useState([]);
 
@@ -208,25 +258,38 @@ const AppContent = () => {
   const showTopBar = activeNavItemId === 'home';
 
   return (
-    <div className="main-app">
+    <MainAppContainer $bgColor={theme.colors.mainBg}>
       <VerticalNavBar />
-      <div className="app-content">
+      <AppContentWrapper>
         {showTopBar && (
-          <div className="top-bar">
+          <TopBar 
+            $bgColor={theme.colors.topBarBg}
+            $shadow={theme.colors.shadow}
+          >
             <div className="user-info">
-              <span className="welcome-text">Welcome, {user?.name || user?.email || 'User'}</span>
+              <WelcomeText $textColor={theme.colors.textPrimary}>
+                Welcome, {user?.name || user?.email || 'User'}
+              </WelcomeText>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <NotificationCenter />
               <div className="user-profile">
                 {user?.profilePicture ? (
-                  <UserProfileImage src={user.profilePicture} alt="Profile" />
+                  <UserProfileImage 
+                    src={user.profilePicture} 
+                    alt="Profile"
+                    $borderColor={theme.colors.accentDark}
+                  />
                 ) : (
-                  <UserProfileInitials>{getUserInitials(user?.name)}</UserProfileInitials>
+                  <UserProfileInitials 
+                    $borderColor={theme.colors.accentDark}
+                  >
+                    {getUserInitials(user?.name)}
+                  </UserProfileInitials>
                 )}
               </div>
             </div>
-          </div>
+          </TopBar>
         )}
         <div className="content-area">
           {renderContent()}
@@ -237,8 +300,8 @@ const AppContent = () => {
           onRefreshProjects={fetchProjects}
           projects={projects} 
         />
-      </div>
-    </div>
+      </AppContentWrapper>
+    </MainAppContainer>
   );
 };
 
