@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { MessageProvider } from './context/MessageContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { SocketProvider } from './context/SocketContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -62,21 +63,23 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <ThemeProvider>
-          <MessageProvider>
-            <Routes>
-              <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
-              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-              <Route path="/forgot-password-otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
-              <Route path="/reset-password/:token" element={<ResetPassword />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/app" element={<ProtectedRoute><MainApp /></ProtectedRoute>} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </MessageProvider>
-        </ThemeProvider>
+        <SocketProvider>
+          <ThemeProvider>
+            <MessageProvider>
+              <Routes>
+                <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+                <Route path="/forgot-password-otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/app" element={<ProtectedRoute><MainApp /></ProtectedRoute>} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </MessageProvider>
+          </ThemeProvider>
+        </SocketProvider>
       </AuthProvider>
     </Router>
   );

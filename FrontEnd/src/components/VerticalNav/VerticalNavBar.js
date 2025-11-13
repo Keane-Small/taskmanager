@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-import { FiMessageCircle, FiCalendar, FiSettings, FiFolder } from 'react-icons/fi';
+import { FiMessageCircle, FiCalendar, FiSettings, FiFolder, FiBarChart2 } from 'react-icons/fi';
 import { MdDashboard } from 'react-icons/md';
 import NavItem from './NavItem';
 
@@ -90,6 +90,7 @@ const VerticalNavBar = () => {
     { id: 'projects', icon: FiFolder, label: 'Projects', notificationCount: 0 },
     { id: 'messages', icon: FiMessageCircle, label: 'Messages', notificationCount: unreadCount },
     { id: 'calendar', icon: FiCalendar, label: 'Calendar', notificationCount: 0 },
+    { id: 'insights', icon: FiBarChart2, label: 'AI Insights', notificationCount: 0 },
   ];
 
   const handleNavClick = (itemId) => {

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FiBell, FiCheck, FiCheckCircle, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../context/SocketContext';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -285,21 +286,33 @@ const NotificationCenter = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { socket, isConnected } = useSocket();
 
   useEffect(() => {
     fetchNotifications();
     fetchUnreadCount();
+  }, []);
 
-    // Poll for new notifications every 30 seconds
-    const interval = setInterval(() => {
-      fetchUnreadCount();
-      if (isOpen) {
-        fetchNotifications();
-      }
-    }, 30000);
+  // Listen for real-time notifications via WebSocket
+  useEffect(() => {
+    if (!socket) return;
 
-    return () => clearInterval(interval);
-  }, [isOpen]);
+    const handleNewNotification = (notification) => {
+      console.log('Received new notification:', notification);
+      
+      // Add new notification to the top of the list
+      setNotifications(prev => [notification, ...prev]);
+      
+      // Increment unread count
+      setUnreadCount(prev => prev + 1);
+    };
+
+    socket.on('notification:new', handleNewNotification);
+
+    return () => {
+      socket.off('notification:new', handleNewNotification);
+    };
+  }, [socket]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

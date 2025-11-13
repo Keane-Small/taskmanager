@@ -11,6 +11,7 @@ import ProjectsPage from './ProjectsPage';
 import MessagesPage from './MessagesPage';
 import CalendarPage from './CalendarPage';
 import SettingsPage from './SettingsPage';
+import InsightsPage from './InsightsPage';
 import SproutQuickCapture from '../components/SproutQuickCapture';
 import NotificationCenter from '../components/NotificationCenter';
 import './MainApp.css';
@@ -248,6 +249,8 @@ const AppContent = () => {
         return <MessagesPage />;
       case 'calendar':
         return <CalendarPage />;
+      case 'insights':
+        return <InsightsPage />;
       case 'settings':
         return <SettingsPage />;
       default:
