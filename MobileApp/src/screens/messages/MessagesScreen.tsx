@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import apiService from '../../services/api';
@@ -20,21 +21,45 @@ import { User, DirectMessage } from '../../types';
 import { theme } from '../../constants/theme';
 import { useAuth } from '../../contexts/AuthContext';
 
+interface Project {
+  _id: string;
+  name: string;
+  description?: string;
+  collaborators: Array<{ user: User }>;
+}
+
+interface ProjectMessage {
+  _id: string;
+  senderId: User;
+  projectId: string;
+  content: string;
+  createdAt: string;
+}
+
 interface Conversation {
   user: User;
   lastMessage: DirectMessage | null;
   unreadCount: number;
 }
 
+type ChatType = 'direct' | 'project';
+
+interface ActiveChat {
+  type: ChatType;
+  data: Conversation | Project;
+}
+
 const MessagesScreen: React.FC = () => {
   const { user: currentUser } = useAuth();
+  const [activeTab, setActiveTab] = useState<ChatType>('direct');
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
   // Chat state
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<DirectMessage[]>([]);
+  const [activeChat, setActiveChat] = useState<ActiveChat | null>(null);
+  const [messages, setMessages] = useState<(DirectMessage | ProjectMessage)[]>([]);
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -42,17 +67,94 @@ const MessagesScreen: React.FC = () => {
   // New conversation modal
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const messagesEndRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    fetchConversations();
-  }, []);
+    fetchData();
+  }, [activeTab]);
+
+  const fetchData = async () => {
+    if (activeTab === 'direct') {
+      await fetchConversations();
+    } else {
+      await fetchProjects();
+    }
+  };
 
   const fetchConversations = async () => {
     try {
-      const data = await apiService.get<Conversation[]>('/messages/conversations');
-      setConversations(data);
+      setIsLoading(true);
+      const userId = currentUser?._id;
+      
+      if (!userId) {
+        console.error('No user ID available');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Fetch all users to build conversations
+      const users = await apiService.get<User[]>('/users');
+      const conversationsData: Conversation[] = [];
+
+      for (const user of users) {
+        if (user._id !== userId) {
+          try {
+            // Fetch messages between current user and this user
+            const msgs = await apiService.get<DirectMessage[]>(
+              `/direct-messages/${userId}/${user._id}`
+            );
+            
+            // Get unread count
+            let unreadCount = 0;
+            try {
+              const unreadData = await apiService.get<{ count: number }>(
+                `/direct-messages/unread/${userId}`
+              );
+              // Filter unread messages from this specific user
+              // Handle both populated and non-populated senderId
+              unreadCount = msgs.filter(m => {
+                const senderId = typeof m.senderId === 'object' ? m.senderId._id : m.senderId;
+                return !m.read && senderId === user._id;
+              }).length;
+            } catch (e) {
+              console.log('Error fetching unread count:', e);
+            }
+
+            conversationsData.push({
+              user,
+              lastMessage: msgs.length > 0 ? msgs[msgs.length - 1] : null,
+              unreadCount,
+            });
+          } catch (error) {
+            console.log(`No messages with ${user.name}`);
+          }
+        }
+      }
+
+      // Sort by last message time
+      conversationsData.sort((a, b) => {
+        const aTime = a.lastMessage ? new Date(a.lastMessage.createdAt).getTime() : 0;
+        const bTime = b.lastMessage ? new Date(b.lastMessage.createdAt).getTime() : 0;
+        return bTime - aTime;
+      });
+
+      setConversations(conversationsData);
     } catch (error) {
       console.error('Error fetching conversations:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      setIsLoading(true);
+      const data = await apiService.get<Project[]>('/projects');
+      setProjects(data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +169,13 @@ const MessagesScreen: React.FC = () => {
   const fetchMessages = async (userId: string) => {
     setIsLoadingMessages(true);
     try {
-      const data = await apiService.get<DirectMessage[]>(`/messages/direct/${userId}`);
+      const currentUserId = currentUser?._id;
+      if (!currentUserId) {
+        console.error('No current user ID');
+        setIsLoadingMessages(false);
+        return;
+      }
+      const data = await apiService.get<DirectMessage[]>(`/direct-messages/${currentUserId}/${userId}`);
       setMessages(data);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -77,29 +185,36 @@ const MessagesScreen: React.FC = () => {
   };
 
   const openChat = (conversation: Conversation) => {
-    setSelectedConversation(conversation);
+    if (!conversation || !conversation.user) {
+      console.error('Invalid conversation data');
+      return;
+    }
+    setActiveChat({ type: 'direct', data: conversation });
     fetchMessages(conversation.user._id);
   };
 
   const closeChat = () => {
-    setSelectedConversation(null);
+    setActiveChat(null);
     setMessages([]);
     setMessageText('');
     fetchConversations(); // Refresh conversations to update read status
   };
 
   const sendMessage = async () => {
-    if (!messageText.trim() || !selectedConversation) return;
+    if (!messageText.trim() || !activeChat) return;
 
     setIsSending(true);
     try {
-      const newMessage = await apiService.post<DirectMessage>('/messages/direct', {
-        recipientId: selectedConversation.user._id,
-        content: messageText.trim(),
-      });
-      
-      setMessages([...messages, newMessage]);
-      setMessageText('');
+      if (activeChat.type === 'direct') {
+        const conversation = activeChat.data as Conversation;
+        const newMessage = await apiService.post<DirectMessage>('/direct-messages', {
+          recipientId: conversation.user._id,
+          content: messageText.trim(),
+        });
+        
+        setMessages([...messages, newMessage]);
+        setMessageText('');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -109,7 +224,7 @@ const MessagesScreen: React.FC = () => {
 
   const fetchAllUsers = async () => {
     try {
-      const data = await apiService.get<User[]>('/messages/users');
+      const data = await apiService.get<User[]>('/users');
       setAllUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -182,7 +297,10 @@ const MessagesScreen: React.FC = () => {
   );
 
   const renderMessageItem = ({ item }: { item: DirectMessage }) => {
-    const isOwnMessage = item.senderId._id === currentUser?._id;
+    // Handle both populated and non-populated senderId
+    const senderId = typeof item.senderId === 'object' ? item.senderId._id : item.senderId;
+    const currentUserId = currentUser?._id;
+    const isOwnMessage = senderId === currentUserId;
     
     return (
       <View style={[styles.messageContainer, isOwnMessage && styles.ownMessageContainer]}>
@@ -210,7 +328,8 @@ const MessagesScreen: React.FC = () => {
   }
 
   // Chat view
-  if (selectedConversation) {
+  if (activeChat && activeChat.type === 'direct') {
+    const conversation = activeChat.data as Conversation;
     return (
       <KeyboardAvoidingView
         style={styles.container}
@@ -225,20 +344,20 @@ const MessagesScreen: React.FC = () => {
           
           <View style={styles.chatHeaderInfo}>
             <View style={styles.chatAvatar}>
-              {selectedConversation.user.profilePicture ? (
+              {conversation.user.profilePicture ? (
                 <Image
-                  source={{ uri: selectedConversation.user.profilePicture }}
+                  source={{ uri: conversation.user.profilePicture }}
                   style={styles.chatAvatarImage}
                 />
               ) : (
                 <View style={styles.chatAvatarPlaceholder}>
                   <Text style={styles.chatAvatarText}>
-                    {selectedConversation.user.name.charAt(0).toUpperCase()}
+                    {conversation.user.name.charAt(0).toUpperCase()}
                   </Text>
                 </View>
               )}
             </View>
-            <Text style={styles.chatHeaderName}>{selectedConversation.user.name}</Text>
+            <Text style={styles.chatHeaderName}>{conversation.user.name}</Text>
           </View>
         </View>
 
@@ -249,7 +368,7 @@ const MessagesScreen: React.FC = () => {
           </View>
         ) : (
           <FlatList
-            data={messages}
+            data={messages as DirectMessage[]}
             renderItem={renderMessageItem}
             keyExtractor={(item) => item._id}
             contentContainerStyle={styles.messagesContent}

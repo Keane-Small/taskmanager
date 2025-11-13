@@ -1,6 +1,7 @@
-// Using LocalTunnel to expose backend
-// Update this URL when you restart localtunnel (it generates a new URL each time)
-export const API_URL = 'https://wet-sides-repair.loca.lt/api';
+// Using local IP address for development
+// Make sure your backend is running on this machine at port 5000
+// Replace with your computer's local IP if different
+export const API_URL = 'http://10.0.0.161:5000/api';
 
 export const API_ENDPOINTS = {
   // Auth

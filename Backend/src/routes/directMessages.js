@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const directMessageController = require('../controllers/directMessageController');
+const auth = require('../middleware/auth');
+
+// All routes require authentication
+router.use(auth);
 
 // Get unread count for a user (must be before /:userId1/:userId2)
 router.get('/unread/:userId', directMessageController.getUnreadCount);

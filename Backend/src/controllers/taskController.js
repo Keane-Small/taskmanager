@@ -47,6 +47,23 @@ exports.createTask = async (req, res) => {
   }
 };
 
+// Get all tasks for the authenticated user
+exports.getAllTasks = async (req, res) => {
+  try {
+    const userId = req.userId;
+    
+    // Get all tasks belonging to the user's projects
+    const tasks = await Task.find({ userId })
+      .populate('projectId', 'name description')
+      .populate('assignedTo', 'name email')
+      .sort({ createdAt: -1 });
+    
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 // Get all tasks for a project
 exports.getTasksForProject = async (req, res) => {
   try {

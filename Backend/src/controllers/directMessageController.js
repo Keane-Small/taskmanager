@@ -21,12 +21,32 @@ exports.getDirectMessages = async (req, res) => {
 
 // Send a direct message
 exports.sendDirectMessage = async (req, res) => {
-  const { sender, recipient, content } = req.body;
   try {
-    const message = new DirectMessage({ sender, recipient, content });
+    const { recipientId, recipient, content } = req.body;
+    const senderId = req.userId; // From auth middleware
+    
+    // Use recipientId if provided, otherwise use recipient (for backward compatibility)
+    const recipientUserId = recipientId || recipient;
+    
+    if (!recipientUserId || !content) {
+      return res.status(400).json({ error: 'Recipient and content are required' });
+    }
+    
+    const message = new DirectMessage({ 
+      sender: senderId, 
+      recipient: recipientUserId, 
+      content 
+    });
+    
     await message.save();
+    
+    // Populate sender and recipient details before sending response
+    await message.populate('sender', 'name email profilePicture');
+    await message.populate('recipient', 'name email profilePicture');
+    
     res.status(201).json(message);
   } catch (err) {
+    console.error('Error sending direct message:', err);
     res.status(500).json({ error: err.message });
   }
 };
